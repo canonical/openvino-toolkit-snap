@@ -1,5 +1,5 @@
-name: cjp256-openvino-toolkit-1804
-base: core18
+name: openvino-toolkit-2204
+base: core22
 summary: Intel's OpenVINO Toolkit
 description: |
   SDK to build OpenVINO applications
@@ -24,27 +24,28 @@ parts:
       - libssl-dev
   openvino:
     source: https://github.com/openvinotoolkit/openvino.git
-    source-branch: "releases/2020/4"
+    source-branch: "releases/2023/3"
     plugin: cmake
     build-environment:
       - OpenCV_DIR: $SNAPCRAFT_STAGE/opencv
       - PATH: /usr/lib/ccache:$PATH
     override-pull: |
-      snapcraftctl pull
-      snapcraftctl set-version "$(git describe --tags --always)"
+      craftctl default
+      craftctl set version="$(git describe --tags --always)"
     override-build: |
       pip3 install Cython
-      cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/openvino -DTHREADING=SEQ -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.6 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6 -DCYTHON_EXECUTABLE=$(which cython) -DTREAT_WARNING_AS_ERROR=OFF $SNAPCRAFT_PART_SRC
+      cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/openvino -DTHREADING=SEQ -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.10 -DPYTHON_INCLUDE_DIR=/usr/include/python3.10 -DCYTHON_EXECUTABLE=$(which cython) -DTREAT_WARNING_AS_ERROR=OFF $SNAPCRAFT_PART_SRC
       cmake --build . -- -j"${SNAPCRAFT_PARALLEL_BUILD_COUNT}"
       cmake --build . --target install -- DESTDIR=/
 
       # Install python packages that don't get installed, and for whatever reason are in the source dir.
-      rsync -av $SNAPCRAFT_PART_SRC/bin/*/Release/lib/python_api/python3.6 $SNAPCRAFT_PART_INSTALL/openvino/python/
+      rsync -av $SNAPCRAFT_PART_SRC/bin/*/Release/lib/python_api/python3.10 $SNAPCRAFT_PART_INSTALL/openvino/python/
     build-packages:
       - ccache
       - autoconf
       - automake
       - bison
+      - build-essential
       - libavcodec-dev
       - libavformat-dev
       - libgtk2.0-dev
@@ -56,6 +57,15 @@ parts:
       - python3-pip
       - rsync
       - wget
+      - libtbb-dev
+      - libpugixml-dev
+      - ocl-icd-opencl-dev
+      - opencl-headers
+      - rapidjson-dev
+      - libva-dev
+      - libsnappy-dev
+      - pybind11-dev
+      - libffi-dev
     after: [opencv, cmake]
   opencv:
     source: https://github.com/opencv/opencv.git
@@ -72,7 +82,7 @@ parts:
       - cmake
       - libavcodec-dev
       - libavformat-dev
-      - libdc1394-22-dev
+      - libdc1394-dev
       - libgtk2.0-dev
       - libjpeg-dev      
       - libpng-dev
@@ -84,12 +94,12 @@ parts:
       - python3-numpy
     stage-packages:
       - libatk1.0-0
-      - libavcodec57
-      - libavformat57
-      - libavutil55
+      - libavcodec58
+      - libavformat58
+      - libavutil56
       - libbluray2
       - libchromaprint1
-      - libdc1394-22
+      - libdc1394-25
       - libdrm2
       - libgme0
       - libgomp1
@@ -105,15 +115,15 @@ parts:
       - libopenjp2-7
       - libopenmpt0
       - libopus0
-      - libpython3.6
+      - libpython3.10
       - libraw1394-11
       - libshine3
       - libsnappy1v5
       - libsoxr0
       - libspeex1
       - libssh-gcrypt-4
-      - libswresample2
-      - libswscale4
+      - libswresample3
+      - libswscale5
       - libtheora0
       - libtwolame0
       - libusb-1.0-0
@@ -124,12 +134,12 @@ parts:
       - libvorbis0a
       - libvorbisenc2
       - libvorbisfile3
-      - libvpx5
+      - libvpx7
       - libwavpack1
-      - libwebp6
+      - libwebp7
       - libwebpmux3
-      - libx264-152
-      - libx265-146
+      - libx264-163
+      - libx265-199
       - libxcomposite1
       - libxcursor1
       - libxdamage1
