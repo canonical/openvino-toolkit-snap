@@ -8,6 +8,9 @@ grade: devel
 confinement: strict
 adopt-info: openvino
 
+architectures:
+  - build-on: amd64
+
 # the recommended mountpoint for that content is /openvino
 slots:
   openvino-toolkit-2204:
