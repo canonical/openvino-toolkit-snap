@@ -8,6 +8,13 @@ grade: devel
 confinement: strict
 adopt-info: openvino
 
+# the recommended mountpoint for that content is /openvino
+slots:
+  openvino-toolkit-2204:
+    interface: content
+    read:
+      - /
+
 parts:
   cmake:
     source: https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2.tar.gz
@@ -24,14 +31,14 @@ parts:
       - libssl-dev
   openvino:
     source: https://github.com/openvinotoolkit/openvino.git
-    source-branch: "releases/2023/3"
+    source-branch: "releases/2024/0"
     plugin: cmake
     build-environment:
       - OpenCV_DIR: $SNAPCRAFT_STAGE/opencv
       - PATH: /usr/lib/ccache:$PATH
     override-pull: |
       craftctl default
-      craftctl set version="$(git describe --tags --always)"
+      craftctl set version="$(git describe --tags --abbrev=4 --always)"
     override-build: |
       pip3 install Cython
       cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/openvino -DTHREADING=SEQ -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.10 -DPYTHON_INCLUDE_DIR=/usr/include/python3.10 -DCYTHON_EXECUTABLE=$(which cython) -DTREAT_WARNING_AS_ERROR=OFF $SNAPCRAFT_PART_SRC
@@ -39,7 +46,7 @@ parts:
       cmake --build . --target install -- DESTDIR=/
 
       # Install python packages that don't get installed, and for whatever reason are in the source dir.
-      rsync -av $SNAPCRAFT_PART_SRC/bin/*/Release/lib/python_api/python3.10 $SNAPCRAFT_PART_INSTALL/openvino/python/
+      #rsync -av $SNAPCRAFT_PART_SRC/bin/*/Release/lib/python_api/python3.10 $SNAPCRAFT_PART_INSTALL/openvino/python/
     build-packages:
       - ccache
       - autoconf
