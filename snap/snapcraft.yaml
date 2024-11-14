@@ -1,72 +1,58 @@
-name: openvino-toolkit-2204
-base: core22
+name: openvino-toolkit-2404
+base: core24
+version: '2024.4.0'
 summary: Intel's OpenVINO Toolkit
 description: |
-  SDK to build OpenVINO applications
+  OpenVINO™ is an open-source toolkit for optimizing and deploying AI inference.
 
 grade: devel
 confinement: strict
 adopt-info: openvino
 
-architectures:
-  - build-on: amd64
+platforms:
+  amd64:
 
-# the recommended mountpoint for that content is /openvino
+# the recommended mountpoint for the content is /openvino
 slots:
-  openvino-toolkit-2204:
+  openvino-libs:
     interface: content
+    content: openvino-libs-2404
     read:
       - /
 
 parts:
-  cmake:
-    source: https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2.tar.gz
-    plugin: nil
-    override-build: |
-      ./bootstrap --prefix=/usr
-      make -j4
-      make install DESTDIR=$SNAPCRAFT_PART_INSTALL
-    build-environment:
-      - PATH: /usr/lib/ccache:$PATH
-    build-packages:
-      - ccache
-      - build-essential
-      - libssl-dev
   openvino:
+    source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-branch: "releases/2024/0"
+    source-tag: 2024.4.0
     plugin: cmake
-    build-environment:
-      - OpenCV_DIR: $SNAPCRAFT_STAGE/opencv
-      - PATH: /usr/lib/ccache:$PATH
+    cmake-parameters:
+      - -DENABLE_PYTHON=ON
+      - -DPython3_EXECUTABLE=/usr/bin/python3.12
+      - -DCMAKE_INSTALL_PREFIX=/usr
     override-pull: |
       craftctl default
-      craftctl set version="$(git describe --tags --abbrev=4 --always)"
-    override-build: |
-      pip3 install Cython
-      cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/openvino -DTHREADING=SEQ -DENABLE_PYTHON=ON -DPYTHON_EXECUTABLE=/usr/bin/python3.10 -DPYTHON_INCLUDE_DIR=/usr/include/python3.10 -DCYTHON_EXECUTABLE=$(which cython) -DTREAT_WARNING_AS_ERROR=OFF $SNAPCRAFT_PART_SRC
-      cmake --build . -- -j"${SNAPCRAFT_PARALLEL_BUILD_COUNT}"
-      cmake --build . --target install -- DESTDIR=/
-
-      # Install python packages that don't get installed, and for whatever reason are in the source dir.
-      #rsync -av $SNAPCRAFT_PART_SRC/bin/*/Release/lib/python_api/python3.10 $SNAPCRAFT_PART_INSTALL/openvino/python/
+      git submodule update --init --recursive
+    stage:
+      - -usr/runtime/3rdparty/tbb/lib/libtbbbind*
+      - -usr/runtime/3rdparty/tbb/lib/libtbbmalloc*
+      - -usr/runtime/3rdparty/tbb/lib/libhwloc.so.15.6.4
     build-packages:
-      - ccache
-      - autoconf
-      - automake
-      - bison
+      - ca-certificates
+      - file
       - build-essential
-      - libavcodec-dev
-      - libavformat-dev
-      - libgtk2.0-dev
-      - libswscale-dev
-      - libtool
-      - libusb-1.0-0-dev
-      - pkg-config
-      - python3-dev
-      - python3-pip
-      - rsync
-      - wget
+      - ninja-build
+      - scons
+      - ccache
+      - gcc-multilib
+      - g++-multilib
+      - pkgconf
+      - git
+      - shellcheck
+      - patchelf
+      - fdupes
+      - gzip
+      - lintian
       - libtbb-dev
       - libpugixml-dev
       - ocl-icd-opencl-dev
@@ -74,87 +60,13 @@ parts:
       - rapidjson-dev
       - libva-dev
       - libsnappy-dev
+      - python3-pip
+      - python3-venv
+      - python3-setuptools
+      - libpython3-dev
       - pybind11-dev
       - libffi-dev
-    after: [opencv, cmake]
-  opencv:
-    source: https://github.com/opencv/opencv.git
-    plugin: cmake
-    build-environment:
-      - PATH: /usr/lib/ccache:$PATH
-    override-build: |
-      cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/openvino/opencv -DPYTHON_DEFAULT_EXECUTABLE=$(which python3) -DINSTALL_PYTHON_EXAMPLES=ON -DBUILD_opencv_python3=ON $SNAPCRAFT_PART_SRC
-      cmake --build . -- -j"${SNAPCRAFT_PARALLEL_BUILD_COUNT}"
-      cmake --build . --target install -- DESTDIR=/
-    build-packages:
-      - ccache
-      - build-essential
-      - cmake
-      - libavcodec-dev
-      - libavformat-dev
-      - libdc1394-dev
-      - libgtk2.0-dev
-      - libjpeg-dev      
-      - libpng-dev
-      - libswscale-dev
-      - libtbb-dev
-      - libtiff-dev
-      - pkg-config
-      - python3-dev
-      - python3-numpy
+      - python3-enchant
+      - wget
     stage-packages:
-      - libatk1.0-0
-      - libavcodec58
-      - libavformat58
-      - libavutil56
-      - libbluray2
-      - libchromaprint1
-      - libdc1394-25
-      - libdrm2
-      - libgme0
-      - libgomp1
-      - libgsm1
-      - libgstreamer-plugins-base1.0-0
-      - libgstreamer1.0-0
-      - libgtk2.0-0
-      - libmp3lame0
-      - libmpg123-0
-      - libnuma1
-      - libogg0
-      - liborc-0.4-0
-      - libopenjp2-7
-      - libopenmpt0
-      - libopus0
-      - libpython3.10
-      - libraw1394-11
-      - libshine3
-      - libsnappy1v5
-      - libsoxr0
-      - libspeex1
-      - libssh-gcrypt-4
-      - libswresample3
-      - libswscale5
-      - libtheora0
-      - libtwolame0
-      - libusb-1.0-0
-      - libva-drm2
-      - libva-x11-2
-      - libva2
-      - libvdpau1
-      - libvorbis0a
-      - libvorbisenc2
-      - libvorbisfile3
-      - libvpx7
-      - libwavpack1
-      - libwebp7
-      - libwebpmux3
-      - libx264-163
-      - libx265-199
-      - libxcomposite1
-      - libxcursor1
-      - libxdamage1
-      - libxi6
-      - libxinerama1
-      - libxrandr2
-      - libxvidcore4
-      - libzvbi0
+      - ocl-icd-libopencl1
