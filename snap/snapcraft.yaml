@@ -1,6 +1,5 @@
 name: openvino-toolkit-2404
 base: core24
-version: '2024.4.0'
 summary: Intel's OpenVINO Toolkit
 description: |
   OpenVINO™ is an open-source toolkit for optimizing and deploying AI inference.
@@ -33,6 +32,7 @@ parts:
     override-pull: |
       craftctl default
       git submodule update --init --recursive
+      craftctl set version="$(git describe --tags --abbrev=4 --always)"
     stage:
       - -usr/runtime/3rdparty/tbb/lib/libtbbbind*
       - -usr/runtime/3rdparty/tbb/lib/libtbbmalloc*
