@@ -23,7 +23,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: 2024.4.0
+    source-tag: 2024.5.0
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -33,10 +33,6 @@ parts:
       craftctl default
       git submodule update --init --recursive
       craftctl set version="$(git describe --tags --abbrev=4 --always)"
-    stage:
-      - -usr/runtime/3rdparty/tbb/lib/libtbbbind*
-      - -usr/runtime/3rdparty/tbb/lib/libtbbmalloc*
-      - -usr/runtime/3rdparty/tbb/lib/libhwloc.so.15.6.4
     build-packages:
       - ca-certificates
       - file
@@ -70,3 +66,14 @@ parts:
       - wget
     stage-packages:
       - ocl-icd-libopencl1
+
+lint:
+  ignore:
+    - library:
+      # These are needed but are flagged
+      # by the linter because they are not
+      # explicitly linked to any binary or
+      # shared object
+      - usr/runtime/3rdparty/tbb/lib/libtbbbind*
+      - usr/runtime/3rdparty/tbb/lib/libtbbmalloc*
+      - usr/runtime/3rdparty/tbb/lib/libhwloc.so.15.6.4

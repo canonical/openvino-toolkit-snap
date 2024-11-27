@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# This script is designed to set up the runtime
+# environment for applications consuming the OpenVINO
+# content producer snap. It also checks for user access
+# to device nodes required for using the GPU and NPU plugins
+# and emits a warning if a node is inaccessible.
+#
+
+# Save positional args in a new variable as setupvars.sh consumes $@
+cmd=("$@")
+
+# Source OpenVINO script to export environment vars needed at runtime
+if [ -f "${SNAP}/openvino/usr/setupvars.sh" ]; then
+  source "${SNAP}/openvino/usr/setupvars.sh"
+else
+  echo "Warning: OpenVINO command-chain script not found."
+fi
+
+# libOpenCL shared objects distributed with OpenVINO snap
+export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/x86_64-linux-gnu":$LD_LIBRARY_PATH
+
+# Check user access to Intel accelerator devices (GPU and NPU)
+check_user_access() {
+  if [ $# -ne 3 ]; then
+    echo "Unable to check user access to device accelerator(s)."
+    return 0
+  fi
+  device_type=$1
+  glob_path=$2 # /dev/dri/card, /dev/dri/render, or /dev/accel/accel
+  required_group=$3
+
+  if ! compgen -G "${glob_path}"* > /dev/null; then
+    return 0 # skip as there is no device on the host
+  fi
+
+  if ! id -nGz "${USER}" | grep -qzxF "${required_group}"; then
+    echo "Warning: to use the ${device_type} plugin, the user must be in the ${required_group} group."
+    echo "Please run 'sudo usermod -a -G ${required_group} ${USER}' then log out and back in."
+    return 0
+  fi
+
+  for node in "${glob_path}"*; do
+    if ! test -r "${node}" || ! test -w "${node}"; then
+      echo "Warning: to use device ${node} with the ${device_type} plugin, the user must have read and write access to ${node}."
+      echo "Please run 'sudo chown root:${required_group} ${node} && sudo chmod g+rw ${node}'."
+      return 0
+    fi
+  done
+}
+
+check_user_access GPU /dev/dri/render render
+check_user_access GPU /dev/dri/card video # TODO: verify this requirement
+check_user_access NPU /dev/accel/accel render
+
+exec "${cmd[@]}"
