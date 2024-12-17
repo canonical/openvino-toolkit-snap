@@ -50,7 +50,6 @@ check_user_access() {
 }
 
 check_user_access GPU /dev/dri/render render
-check_user_access GPU /dev/dri/card video # TODO: verify this requirement
 check_user_access NPU /dev/accel/accel render
 
 exec "${cmd[@]}"
