@@ -13,12 +13,20 @@ plugs:
     content: openvino-libs-2404
     target: $SNAP/openvino
 
-environment:
-  LD_LIBRARY_PATH: $SNAP/openvino:$LD_LIBRARY_PATH
-
 apps:
   openvino-enabled-app:
+    command-chain: ["command-chain/openvino-launch"]
     command: ...
     plugs:
       - openvino-libs
+
+parts:
+  ...
+  command-chain-openvino:
+    plugin: dump
+    source-type: git
+    source: https://github.com/canonical/openvino-toolkit-snap.git
+    source-tag: 2024.5.0-0
+    stage:
+      - command-chain/openvino-launch
 ```
