@@ -44,6 +44,7 @@ check_user_access() {
     if ! test -r "${node}" || ! test -w "${node}"; then
       echo "Warning: to use device ${node} with the ${device_type} plugin, the user must have read and write access to ${node}."
       echo "Please run 'sudo chown root:${required_group} ${node} && sudo chmod g+rw ${node}'."
+      echo "Also confirm (run 'snap connections') that snap interfaces required to access ${node} are connected."
       return 0
     fi
   done
