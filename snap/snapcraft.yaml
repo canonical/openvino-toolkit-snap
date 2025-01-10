@@ -9,6 +9,8 @@ confinement: strict
 adopt-info: openvino
 
 platforms:
+  arm64:
+    build-on: [amd64]
   amd64:
 
 # the recommended mountpoint for the content is /openvino
@@ -23,7 +25,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: 2024.5.0
+    source-tag: 2024.6.0
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -32,7 +34,7 @@ parts:
     override-pull: |
       craftctl default
       git submodule update --init --recursive
-      craftctl set version="$(git describe --tags --abbrev=4 --always)"
+      craftctl set version="$(git describe --tags)"
     build-packages:
       - ca-certificates
       - file
