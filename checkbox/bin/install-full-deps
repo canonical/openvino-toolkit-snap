@@ -1,7 +1,8 @@
 #!/bin/bash
 
-optional_arg=$1
-if [ "${optional_arg}" = "--install_from_store" ]; then
+optional_arg_A=$1
+optional_arg_B=$2
+if [ "${optional_arg_A}" = "--install_from_store" ] || [ "${optional_arg_B}" = "--install_from_store" ]; then
   echo "Installing openvino-toolkit-2404 from the beta channel in the Snap Store."
   sudo snap install --beta openvino-toolkit-2404
 fi
@@ -48,4 +49,13 @@ then
   exit 1
 fi
 
-sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools
+sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools jq
+sudo snap install openvino-ai-plugins-gimp --beta
+
+if [ "${optional_arg_A}" = "--clean_plugin_dirs" ] || [ "${optional_arg_B}" = "--clean_plugin_dirs" ]; then
+  CONFIG_FILE=${SNAP_REAL_HOME}/snap/openvino-ai-plugins-gimp/common/gimp_openvino_config.json
+  MODEL_DIR=${SNAP_REAL_HOME}/.local/share/openvino-ai-plugins-gimp
+  echo "Removing ${CONFIG_FILE} and ${MODEL_DIR} for the next checkbox run."
+  rm -f ${CONFIG_FILE}
+  rm -rf ${MODEL_DIR}
+fi

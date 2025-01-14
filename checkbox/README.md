@@ -37,6 +37,14 @@ Note this will NOT install the `openvino-toolkit-2404` snap by default. This is 
 checkbox-openvino-toolkit-2404.install-full-deps --install_from_store
 ```
 
+Note that the checkbox tests will install models to the same path(s) used by the `openvino-ai-plugins-gimp.model-setup` application. This is because the application has permissions to only write to certain paths, and thus users are not allowed the flexibility to install to any arbitrary path. Therefore, in order for the GIMP plugin tests to run, the models and a config file should be absent in order to test whether the application creates these files in the expected locations. Between checkbox runs, you can remove these files and directories by passing the `--clean_plugin_dirs` option:
+
+```
+checkbox-openvino-toolkit-2404.install-full-deps --clean_plugin_dirs
+```
+
+Please use this with caution as it will remove models that you may have previously installed to a machine for running the OpenVINO AI plugins with GIMP.
+
 ## Automated run
 
 ```

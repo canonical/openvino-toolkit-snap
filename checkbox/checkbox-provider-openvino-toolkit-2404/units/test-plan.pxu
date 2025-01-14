@@ -4,6 +4,7 @@ _name: OpenVINO Python API tests
 include:
     host/.*
     python/.*
+    gimp/.*
 bootstrap_include:
     com.canonical.certification::executable
     com.canonical.certification::snap
