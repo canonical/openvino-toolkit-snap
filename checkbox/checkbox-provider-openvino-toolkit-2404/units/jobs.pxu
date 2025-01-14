@@ -1,0 +1,101 @@
+id: host_npu
+category_id: openvino
+plugin: resource
+_description: Creates resource describing if NPU is available on the host
+estimated_duration: 2s
+command:
+  if ls /dev/accel/accel* > /dev/null 2>&1 ; then
+    echo "state: present"
+  else
+    echo "state: not-present"
+  fi
+
+id: host/NpuDevicePermissions
+category_id: openvino
+flags: simple
+_summary: Check that user has read and write access to NPU char device node(s)
+estimated_duration: 2s
+requires:
+  host_npu.state == 'present'
+command:
+  for node in "/dev/accel/accel*"; do
+    if ! test -r ${node} ; then
+      >&2 echo "Test failure: user must have read permissions to ${node}"
+      >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"
+      >&2 echo "Then run 'sudo chown root:render ${node} && sudo chmod g+rw ${node}'"
+      exit 1
+    fi
+    if ! test -w ${node} ; then
+      >&2 echo "Test failure: user must have write permissions to ${node}"
+      >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"
+      >&2 echo "Then run 'sudo chown root:render ${node} && sudo chmod g+rw ${node}'"
+      exit 1
+    fi
+  done
+  echo "Test success: user has read and write access to NPU device node(s) $(ls /dev/accel/accel*)"
+
+id: host_gpu
+category_id: openvino
+plugin: resource
+_description: Creates resource describing if GPU is available on the host
+estimated_duration: 2s
+command:
+  if ls /dev/dri/render* > /dev/null 2>&1 ; then
+    echo "state: present"
+  else
+    echo "state: not-present"
+  fi
+
+id: host/GpuDevicePermissions
+category_id: openvino
+flags: simple
+_summary: Check that user has read and write access to GPU char device node(s)
+estimated_duration: 2s
+requires:
+  host_gpu.state == 'present'
+command:
+  for node in "/dev/dri/render*"; do
+    if ! test -r ${node} ; then
+      >&2 echo "Test failure: user must have read permissions to ${node}"
+      >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"
+      >&2 echo "Then run 'sudo chown root:render ${node} && sudo chmod g+rw ${node}'"
+      exit 1
+    fi
+    if ! test -w ${node} ; then
+      >&2 echo "Test failure: user must have write permissions to ${node}"
+      >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"
+      >&2 echo "Then run 'sudo chown root:render ${node} && sudo chmod g+rw ${node}'"
+      exit 1
+    fi
+  done
+  echo "Test success: user has read and write access to GPU device node(s) $(ls /dev/dri/render*)"
+
+id: host/IntelGpuAvail
+category_id: openvino
+flags: simple
+_summary: Verify that an Intel GPU is available on the host
+estimated_duration: 2s
+requires: 
+  executable.name == 'intel_gpu_top'
+  host_gpu.state == 'present'
+command:
+  result=$(intel_gpu_top -L)
+  if [[ ${result} == *"pci:vendor=8086"* ]]; then
+      echo "Test success: Intel GPU available on host: ${result}"
+  else
+      >&2 echo "Test failure: "intel_gpu_top -L" reports no Intel GPUs: ${result}"
+      exit 1
+  fi
+
+id: python/devices_avail
+category_id: openvino
+flags: simple
+_summary: Check that we can use a CPU, NPU, and GPU with the OpenVINO Python API
+estimated_duration: 5s
+requires:
+  executable.name == 'openvino-sample-consumer.validate-openvino'
+  host_npu.state == 'present'
+  host_gpu.state == 'present'
+command:
+  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
+  openvino-sample-consumer.validate-openvino

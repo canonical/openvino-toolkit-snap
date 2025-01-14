@@ -1,0 +1,51 @@
+#!/bin/bash
+
+optional_arg=$1
+if [ "${optional_arg}" = "--install_from_store" ]; then
+  echo "Installing openvino-toolkit-2404 from the beta channel in the Snap Store."
+  sudo snap install --beta openvino-toolkit-2404
+fi
+
+if ! snap list openvino-toolkit-2404 2>&1 >/dev/null
+then
+  echo "Error: openvino-toolkit-2404 snap is not installed!"
+  echo "Either install the openvino-toolkit-2404 snap locally or from the store (using --install_from_store)"
+  exit 1
+fi
+
+if ! snap list openvino-sample-consumer 2>&1 >/dev/null
+then
+  echo "Error: openvino-sample-consumer snap is not installed!"
+  echo "Please build and install it locally."
+  exit 1
+fi
+
+if ! snap connections openvino-sample-consumer | grep -wq npu-libs-2404
+then
+  echo "Error: the npu-libs plug for openvino-sample-consumer is not connected."
+  echo "Please run 'sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs'"
+  exit 1
+fi
+
+if ! snap connections openvino-sample-consumer | grep -wq openvino-libs-2404
+then
+  echo "Error: the openvino-libs plug for openvino-sample-consumer is not connected."
+  echo "Please run 'sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs'"
+  exit 1
+fi
+
+if ! snap connections openvino-sample-consumer | grep -wq custom-device
+then
+  echo "Error: the intel-npu plug for openvino-sample-consumer is not connected."
+  echo "Please run 'sudo snap connect openvino-sample-consumer:intel-npu intel-npu-driver:intel-npu'"
+  exit 1
+fi
+
+if ! snap connections openvino-sample-consumer | grep -wq opengl
+then
+  echo "Error: the opengl plug for openvino-sample-consumer is not connected."
+  echo "Please run 'sudo snap connect openvino-sample-consumer:opengl'"
+  exit 1
+fi
+
+sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools

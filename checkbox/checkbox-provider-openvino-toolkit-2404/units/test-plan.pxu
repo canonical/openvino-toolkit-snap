@@ -1,0 +1,10 @@
+id: openvino-python
+unit: test plan
+_name: OpenVINO Python API tests
+include:
+    host/.*
+    python/.*
+bootstrap_include:
+    com.canonical.certification::executable
+    com.canonical.certification::snap
+
