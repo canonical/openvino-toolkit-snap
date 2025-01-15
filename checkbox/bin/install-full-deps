@@ -21,36 +21,19 @@ then
   exit 1
 fi
 
-if ! snap connections openvino-sample-consumer | grep -wq npu-libs-2404
-then
-  echo "Error: the npu-libs plug for openvino-sample-consumer is not connected."
-  echo "Please run 'sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs'"
-  exit 1
-fi
-
-if ! snap connections openvino-sample-consumer | grep -wq openvino-libs-2404
-then
-  echo "Error: the openvino-libs plug for openvino-sample-consumer is not connected."
-  echo "Please run 'sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs'"
-  exit 1
-fi
-
-if ! snap connections openvino-sample-consumer | grep -wq custom-device
-then
-  echo "Error: the intel-npu plug for openvino-sample-consumer is not connected."
-  echo "Please run 'sudo snap connect openvino-sample-consumer:intel-npu intel-npu-driver:intel-npu'"
-  exit 1
-fi
-
-if ! snap connections openvino-sample-consumer | grep -wq opengl
-then
-  echo "Error: the opengl plug for openvino-sample-consumer is not connected."
-  echo "Please run 'sudo snap connect openvino-sample-consumer:opengl'"
-  exit 1
-fi
-
 sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools jq
+sudo snap install intel-npu-driver --beta
 sudo snap install openvino-ai-plugins-gimp --beta
+
+# the content interfaces require manual connection
+sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs
+sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs
+
+# Since openvino-toolkit-2404 snap could be built and installed locally, this
+# means that some of the interfaces may not autoconnect.
+sudo snap connect openvino-ai-plugins-gimp:npu-libs intel-npu-driver:npu-libs
+sudo snap connect openvino-ai-plugins-gimp:openvino-libs openvino-toolkit-2404:openvino-libs
+sudo snap connect openvino-ai-plugins-gimp:dot-local-share-openvino-ai-plugins-gimp
 
 if [ "${optional_arg_A}" = "--clean_plugin_dirs" ] || [ "${optional_arg_B}" = "--clean_plugin_dirs" ]; then
   CONFIG_FILE=${SNAP_REAL_HOME}/snap/openvino-ai-plugins-gimp/common/gimp_openvino_config.json

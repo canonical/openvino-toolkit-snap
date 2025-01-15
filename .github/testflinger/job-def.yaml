@@ -28,7 +28,6 @@ test_data:
       sudo snap install lxd --channel=5.21/stable
       sudo adduser ubuntu lxd
       sudo snap refresh
-      sudo snap install --beta intel-npu-driver
     '
 
     # Disable swap and IPv6
@@ -55,8 +54,6 @@ test_data:
       cd ~ubuntu/openvino-toolkit-snap/sample-consumer
       snapcraft
       sudo snap install --dangerous ./openvino-sample-consumer_1.0.0_amd64.snap
-      sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs
-      sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs
     '
 
     # Build and install checkbox-openvino-toolkit-2404 snap

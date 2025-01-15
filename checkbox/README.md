@@ -10,12 +10,10 @@ sudo snap install checkbox22
 lxd init --auto
 git clone -b openvino-toolkit-2404 https://github.com/canonical/openvino-toolkit-snap.git
 
-# first build and install content consumer snap and connect its snapd interfaces
+# first build and install content consumer snap and install it
 cd openvino-toolkit-snap/sample-consumer
 snapcraft
 sudo snap install --dangerous ./openvino-sample-consumer_1.0.0_amd64.snap
-sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs
-sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs
 
 # now build and install the checkbox tests for openvino-toolkit-2404
 cd ../openvino-toolkit-snap/checkbox
@@ -29,7 +27,7 @@ sudo snap install --dangerous --classic ./checkbox-openvino-toolkit-2404_1.0.0_a
 checkbox-openvino-toolkit-2404.install-full-deps
 ```
 
-Among the dependencies that are installed is the `openvino-ai-plugins-gimp` snap from the store, which will auto-plug into snapd slots provided by the `openvino-toolkit-2404` snap for testing.
+Among the dependencies that are installed is the `openvino-ai-plugins-gimp` snap from the store. Snapd interfaces are also manually connected where required.
 
 By default, `checkbox-openvino-toolkit-2404.install-full-deps` will NOT install the `openvino-toolkit-2404` snap. This is by design as typically tests will be run on a modified version of the snap built and installed locally. To install the latest version from the `latest/beta` channel in the Snap Store use:
 
