@@ -1,0 +1,52 @@
+name: Build snap and run smoke tests
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'snap/**'
+      - 'command-chain/**'
+      - '.github/workflows/smoke-tests.yaml'
+    branches:
+      - main
+      - frenchwr/integrate-testing # temporary for testing
+  pull_request:
+    paths:
+      - 'snap/**'
+      - 'command-chain/**'
+      - '.github/workflows/smoke-tests.yaml'
+    branches:
+      - main
+
+env:
+  SNAP_ARTIFACT_NAME: openvino-toolkit-2404-snap
+  SNAP_FILE: openvino-toolkit-2404.snap
+
+jobs:
+  snap-build:
+    name: Build snap
+    runs-on: [self-hosted, linux, X64, large, noble]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snapcore/action-build@v1
+        id: snapcraft
+        with:
+          snapcraft-args: "--build-for=amd64 -o ${{ env.SNAP_FILE }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SNAP_ARTIFACT_NAME }}
+          path: ${{ steps.snapcraft.outputs.snap }}
+
+  snap-test:
+    name: Install and verify snap
+    runs-on: ubuntu-24.04
+    needs:
+      - snap-build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SNAP_ARTIFACT_NAME }}
+      - name: Install snap
+        shell: bash
+        run: |
+          sudo snap install --dangerous ${{ env.SNAP_FILE }}
+          snap list
