@@ -18,7 +18,8 @@ estimated_duration: 2s
 requires:
   host_npu.state == 'present'
 command:
-  for node in "/dev/accel/accel*"; do
+  for node in $(ls /dev/accel/accel*); do
+    echo "[INFO] Checking node ${node}"
     if ! test -r ${node} ; then
       >&2 echo "Test failure: user must have read permissions to ${node}"
       >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"
@@ -54,7 +55,8 @@ estimated_duration: 2s
 requires:
   host_gpu.state == 'present'
 command:
-  for node in "/dev/dri/render*"; do
+  for node in $(ls /dev/dri/render*); do
+    echo "[INFO] Checking node ${node}"
     if ! test -r ${node} ; then
       >&2 echo "Test failure: user must have read permissions to ${node}"
       >&2 echo "Please run 'sudo usermod -a -G render $USER' then log out and back in"

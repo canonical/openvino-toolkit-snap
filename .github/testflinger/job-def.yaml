@@ -67,8 +67,8 @@ test_data:
     # Enable non-root access to the NPU device node
     ssh ubuntu@$DEVICE_IP '
       sudo usermod -a -G render $USER
-      sudo chown root:render /dev/accel/accel0
-      sudo chmod g+rw /dev/accel/accel0
+      sudo chown root:render /dev/accel/accel*
+      sudo chmod g+rw /dev/accel/accel*
     '
 
     # Install test dependencies
