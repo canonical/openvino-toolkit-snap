@@ -64,16 +64,23 @@ test_data:
       sudo snap install --dangerous --classic ./checkbox-openvino-toolkit-2404_*_amd64.snap
     '
 
-    # Enable non-root access to the NPU device node
+    # Install test dependencies
+    ssh ubuntu@$DEVICE_IP '
+      checkbox-openvino-toolkit-2404.install-full-deps
+    '
+
+    echo "[INFO] Sleeping for 60 seconds to allow NPU firmware to load."
+    sleep 60
+
+    # Enable non-root access to the NPU device node.
+    # Note, this must be run after the intel-npu-driver snap
+    # is installed in `install-full-deps` as the intel_vpu
+    # kernel module is re-loaded which resets permissions on the
+    # NPU device node.
     ssh ubuntu@$DEVICE_IP '
       sudo usermod -a -G render $USER
       sudo chown root:render /dev/accel/accel*
       sudo chmod g+rw /dev/accel/accel*
-    '
-
-    # Install test dependencies
-    ssh ubuntu@$DEVICE_IP '
-      checkbox-openvino-toolkit-2404.install-full-deps
     '
 
     # Run tests
