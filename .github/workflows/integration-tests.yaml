@@ -13,8 +13,7 @@ on:
       - '.github/workflows/integration-tests.yaml'
       - '.github/testflinger/job-def.yaml'
     branches:
-      - main
-      - frenchwr/integrate-testing # temporary for testing
+      - openvino-toolkit-2404
   pull_request:
     paths:
       - 'snap/**'
@@ -27,7 +26,7 @@ on:
       - '.github/workflows/integration-tests.yaml'
       - '.github/testflinger/job-def.yaml'
     branches:
-      - main
+      - openvino-toolkit-2404
 
 env:
   BRANCH: ${{ github.head_ref || github.ref_name }}

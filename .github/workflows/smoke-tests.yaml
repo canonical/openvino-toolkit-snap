@@ -7,15 +7,14 @@ on:
       - 'command-chain/**'
       - '.github/workflows/smoke-tests.yaml'
     branches:
-      - main
-      - frenchwr/integrate-testing # temporary for testing
+      - openvino-toolkit-2404
   pull_request:
     paths:
       - 'snap/**'
       - 'command-chain/**'
       - '.github/workflows/smoke-tests.yaml'
     branches:
-      - main
+      - openvino-toolkit-2404
 
 env:
   SNAP_ARTIFACT_NAME: openvino-toolkit-2404-snap
