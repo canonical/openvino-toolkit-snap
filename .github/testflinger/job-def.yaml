@@ -1,0 +1,89 @@
+job_queue: REPLACE_QUEUE
+output_timeout: 7200
+provision_data:
+  REPLACE_PROVISION_DATA
+test_data:
+  test_cmds: |
+
+    # Exit immediately if a test fails
+    set -e
+
+    # Clone repo from appropriate branch/commit.
+    ssh ubuntu@$DEVICE_IP '
+      sudo DEBIAN_FRONTEND=noninteractive apt update
+      sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
+      sudo DEBIAN_FRONTEND=noninteractive apt -y install git curl
+      git clone -b REPLACE_BRANCH \
+        https://github.com/canonical/openvino-toolkit-snap.git \
+        ~ubuntu/openvino-toolkit-snap
+      cd ~ubuntu/openvino-toolkit-snap
+      echo "Current git branch: $(git branch --show-current)"
+      echo "Latest commit:"
+      git log --name-status HEAD^..HEAD
+    '
+
+    # Install dependencies
+    ssh ubuntu@$DEVICE_IP '
+      sudo snap install --classic snapcraft
+      sudo snap install lxd --channel=5.21/stable
+      sudo adduser ubuntu lxd
+      sudo snap refresh
+    '
+
+    # Disable swap and IPv6
+    ssh ubuntu@$DEVICE_IP '
+      sudo sysctl -w vm.swappiness=0
+      sudo echo "vm.swappiness = 0" | sudo tee -a /etc/sysctl.conf
+      sudo swapoff -a
+      echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+      echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+      echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+      sudo sysctl -p
+    '
+
+    # Build and install openvino-toolkit-2404 snap
+    ssh ubuntu@$DEVICE_IP '
+      lxd init --auto
+      cd ~ubuntu/openvino-toolkit-snap
+      snapcraft --build-for=amd64
+      sudo snap install --dangerous ./openvino-toolkit-2404_*_amd64.snap
+    '
+
+    # Build and install sample-consumer snap
+    ssh ubuntu@$DEVICE_IP '
+      cd ~ubuntu/openvino-toolkit-snap/sample-consumer
+      snapcraft
+      sudo snap install --dangerous ./openvino-sample-consumer_1.0.0_amd64.snap
+    '
+
+    # Build and install checkbox-openvino-toolkit-2404 snap
+    ssh ubuntu@$DEVICE_IP '
+      cd ~ubuntu/openvino-toolkit-snap/checkbox
+      sudo snap install checkbox22
+      snapcraft
+      sudo snap install --dangerous --classic ./checkbox-openvino-toolkit-2404_*_amd64.snap
+    '
+
+    # Install test dependencies
+    ssh ubuntu@$DEVICE_IP '
+      checkbox-openvino-toolkit-2404.install-full-deps
+    '
+
+    echo "[INFO] Sleeping for 60 seconds to allow NPU firmware to load."
+    sleep 60
+
+    # Enable non-root access to the NPU device node.
+    # Note, this must be run after the intel-npu-driver snap
+    # is installed in `install-full-deps` as the intel_vpu
+    # kernel module is re-loaded which resets permissions on the
+    # NPU device node.
+    ssh ubuntu@$DEVICE_IP '
+      sudo usermod -a -G render $USER
+      sudo chown root:render /dev/accel/accel*
+      sudo chmod g+rw /dev/accel/accel*
+    '
+
+    # Run tests
+    ssh ubuntu@$DEVICE_IP '
+      checkbox-openvino-toolkit-2404.test-runner-automated
+    '
