@@ -8,8 +8,8 @@ grade: stable
 
 base: core22
 
-# Here are the available applications of the NPU checkbox provider snap
-# To run : snap run checkbox-npu.<app>
+# Here are the available applications of the OpenVINO Tookit 2404 checkbox provider snap
+# To run : snap run checkbox-openvino-toolkit-2404.<app>
 #
 # checkbox-cli:
 #   - checkbox client, can be used to talk to the checkbox daemon

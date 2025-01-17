@@ -4,10 +4,19 @@ This directory contains the Checkbox OpenVINO Toolkit 2404 Provider, including t
 
 ## Installation
 
+Prerequisites:
+
 ```
 sudo snap install --classic snapcraft
 sudo snap install checkbox22
+sudo snap install lxd
+sudo adduser ubuntu lxd
 lxd init --auto
+```
+
+Now build and install the sample content consumer snap and the checkbox provider for OpenVINO Toolkit 2404:
+
+```
 git clone -b openvino-toolkit-2404 https://github.com/canonical/openvino-toolkit-snap.git
 
 # first build and install content consumer snap and install it
