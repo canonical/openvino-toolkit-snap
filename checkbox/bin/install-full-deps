@@ -1,0 +1,44 @@
+#!/bin/bash
+
+optional_arg_A=$1
+optional_arg_B=$2
+if [ "${optional_arg_A}" = "--install_from_store" ] || [ "${optional_arg_B}" = "--install_from_store" ]; then
+  echo "Installing openvino-toolkit-2404 from the beta channel in the Snap Store."
+  sudo snap install --beta openvino-toolkit-2404
+fi
+
+if ! snap list openvino-toolkit-2404 2>&1 >/dev/null
+then
+  echo "Error: openvino-toolkit-2404 snap is not installed!"
+  echo "Either install the openvino-toolkit-2404 snap locally or from the store (using --install_from_store)"
+  exit 1
+fi
+
+if ! snap list openvino-sample-consumer 2>&1 >/dev/null
+then
+  echo "Error: openvino-sample-consumer snap is not installed!"
+  echo "Please build and install it locally."
+  exit 1
+fi
+
+sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools jq
+sudo snap install intel-npu-driver --beta
+sudo snap install openvino-ai-plugins-gimp --beta
+
+# the content interfaces require manual connection
+sudo snap connect openvino-sample-consumer:npu-libs intel-npu-driver:npu-libs
+sudo snap connect openvino-sample-consumer:openvino-libs openvino-toolkit-2404:openvino-libs
+
+# Since openvino-toolkit-2404 snap could be built and installed locally, this
+# means that some of the interfaces may not autoconnect.
+sudo snap connect openvino-ai-plugins-gimp:npu-libs intel-npu-driver:npu-libs
+sudo snap connect openvino-ai-plugins-gimp:openvino-libs openvino-toolkit-2404:openvino-libs
+sudo snap connect openvino-ai-plugins-gimp:dot-local-share-openvino-ai-plugins-gimp
+
+if [ "${optional_arg_A}" = "--clean_plugin_dirs" ] || [ "${optional_arg_B}" = "--clean_plugin_dirs" ]; then
+  CONFIG_FILE=${SNAP_REAL_HOME}/snap/openvino-ai-plugins-gimp/common/gimp_openvino_config.json
+  MODEL_DIR=${SNAP_REAL_HOME}/.local/share/openvino-ai-plugins-gimp
+  echo "Removing ${CONFIG_FILE} and ${MODEL_DIR} for the next checkbox run."
+  rm -f ${CONFIG_FILE}
+  rm -rf ${MODEL_DIR}
+fi
