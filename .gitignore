@@ -1,1 +1,4 @@
+# Snap build artifacts
 *.snap
+# logs from snapcraft remote-build
+*.txt

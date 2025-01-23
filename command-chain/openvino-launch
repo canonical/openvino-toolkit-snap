@@ -7,18 +7,12 @@
 # and emits a warning if a node is inaccessible.
 #
 
-# Save positional args in a new variable as setupvars.sh consumes $@
-cmd=("$@")
-
-# Source OpenVINO script to export environment vars needed at runtime
-if [ -f "${SNAP}/openvino/usr/setupvars.sh" ]; then
-  source "${SNAP}/openvino/usr/setupvars.sh"
-else
-  echo "Warning: OpenVINO command-chain script not found."
+CONTENT_PATH="${SNAP}/openvino"
+if [ ! -d "${CONTENT_PATH}" ]; then
+  echo "Warning: ${CONTENT_PATH} not present inside ${SNAP_NAME} snap. Please connect the content interface at this path."
 fi
-
-# libOpenCL shared objects distributed with OpenVINO snap
 export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/x86_64-linux-gnu":$LD_LIBRARY_PATH
+export PYTHONPATH="${SNAP}/openvino/usr/lib/python3/dist-packages":$PYTHONPATH
 
 # Check user access to Intel accelerator devices (GPU and NPU)
 check_user_access() {
@@ -53,4 +47,4 @@ check_user_access() {
 check_user_access GPU /dev/dri/render render
 check_user_access NPU /dev/accel/accel render
 
-exec "${cmd[@]}"
+exec "$@"
