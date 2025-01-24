@@ -10,7 +10,6 @@ adopt-info: openvino
 
 platforms:
   arm64:
-    build-on: [amd64]
   amd64:
 
 # the recommended mountpoint for the content is /openvino
@@ -31,10 +30,19 @@ parts:
       - -DENABLE_PYTHON=ON
       - -DPython3_EXECUTABLE=/usr/bin/python3.12
       - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DENABLE_SYSTEM_TBB=ON
+      - -DENABLE_SYSTEM_SNAPPY=ON
+      - -DENABLE_SNAPPY_COMPRESSION=ON
+      - -DCPACK_GENERATOR=DEB
+      - -DENABLE_SAMPLES=OFF
+      - -DENABLE_PYTHON_PACKAGING=ON
     override-pull: |
       craftctl default
       git submodule update --init --recursive
       craftctl set version="$(git describe --tags)"
+    override-build: |
+      craftctl default
+      rm -rf ${CRAFT_PART_INSTALL}/usr/{share,include,bin}
     build-packages:
       - ca-certificates
       - file
@@ -42,8 +50,6 @@ parts:
       - ninja-build
       - scons
       - ccache
-      - gcc-multilib
-      - g++-multilib
       - pkgconf
       - git
       - shellcheck
@@ -66,16 +72,21 @@ parts:
       - libffi-dev
       - python3-enchant
       - wget
+      - libsnappy-dev
     stage-packages:
       - ocl-icd-libopencl1
+      - libtbb12
+      - libsnappy1v5
 
 lint:
   ignore:
     - library:
-      # These are needed but are flagged
-      # by the linter because they are not
-      # explicitly linked to any binary or
-      # shared object
-      - usr/runtime/3rdparty/tbb/lib/libtbbbind*
-      - usr/runtime/3rdparty/tbb/lib/libtbbmalloc*
-      - usr/runtime/3rdparty/tbb/lib/libhwloc.so.15.6.4
+      # OpenVINO libs consumed by other snaps
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libopenvino*
+      # Linked by libopenvino_tensorflow_frontend
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libsnappy*
+      # Not explicitly linked but dlopen'd
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libtbbbind*
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libtbbmalloc*
+      # Linked by libtbbbind
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libhwloc*
