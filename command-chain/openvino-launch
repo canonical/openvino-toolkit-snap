@@ -11,7 +11,7 @@ CONTENT_PATH="${SNAP}/openvino"
 if [ ! -d "${CONTENT_PATH}" ]; then
   echo "Warning: ${CONTENT_PATH} not present inside ${SNAP_NAME} snap. Please connect the content interface at this path."
 fi
-export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/x86_64-linux-gnu":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/$(uname -m)-linux-gnu":$LD_LIBRARY_PATH
 export PYTHONPATH="${SNAP}/openvino/usr/lib/python3/dist-packages":$PYTHONPATH
 
 # Check user access to Intel accelerator devices (GPU and NPU)
@@ -44,7 +44,10 @@ check_user_access() {
   done
 }
 
-check_user_access GPU /dev/dri/render render
-check_user_access NPU /dev/accel/accel render
+# OpenVINO only supports Intel GPU and NPU for acceleration
+if [ "$(uname -m)" = "x86_64" ]; then
+  check_user_access GPU /dev/dri/render render
+  check_user_access NPU /dev/accel/accel render
+fi
 
 exec "$@"
