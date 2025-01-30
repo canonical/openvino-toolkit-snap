@@ -4,7 +4,7 @@ summary: Intel's OpenVINO Toolkit
 description: |
   OpenVINO™ is an open-source toolkit for optimizing and deploying AI inference.
 
-grade: devel
+grade: stable
 confinement: strict
 adopt-info: openvino
 
