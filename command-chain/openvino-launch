@@ -13,11 +13,12 @@ if [ ! -d "${CONTENT_PATH}" ]; then
 fi
 export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/$(uname -m)-linux-gnu":$LD_LIBRARY_PATH
 export PYTHONPATH="${SNAP}/openvino/usr/lib/python3/dist-packages":$PYTHONPATH
+export PATH="${SNAP}/openvino/usr/bin":$PATH
 
 # Check if device node is an Intel GPU
 node_is_intel_gpu() {
   node=$1
-  render_device_name=$(echo "{$node}" | cut -f4 -d"/") # e.g. renderD128
+  render_device_name=$(echo "${node}" | cut -f4 -d"/") # e.g. renderD128
   gpu_info=$(intel_gpu_top -L | grep -B1 -w "${render_device_name}")
   if echo "${gpu_info}" | grep -qw "pci:vendor=8086"; then
     return 0 # this node is an Intel GPU
