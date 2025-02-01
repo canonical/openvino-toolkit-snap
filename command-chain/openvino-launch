@@ -28,7 +28,7 @@ node_is_intel_gpu() {
 # Check user access to Intel accelerator devices (GPU and NPU)
 check_user_access() {
   node=$1
-  if echo "${node}" | grep -qw render; then
+  if echo "${node}" | grep -q render; then
     if ! node_is_intel_gpu "${node}"; then
       return 0 # non-Intel GPUs unsupported
     fi
