@@ -41,22 +41,24 @@ check_user_access() {
   if ! id -nGz "${USER}" | grep -qzxF render; then
     echo "Warning: to use the ${device_type} plugin, the user must be in the render group."
     echo "Please run 'sudo usermod -a -G render ${USER}' then log out and back in."
-    return 0
+    return
   fi
 
   if ! test -r "${node}" || ! test -w "${node}"; then
     echo "Warning: to use device ${node} with the ${device_type} plugin, the user must have read and write access to ${node}."
     echo "Please run 'sudo chown root:render ${node} && sudo chmod g+rw ${node}'."
     echo "Also confirm (run 'snap connections') that snap interfaces required to access ${node} are connected."
+    return
   fi
 }
 
+# handle cases where no render or accel nodes present
+shopt -s nullglob
+
 for node in /dev/dri/render*; do
-  [[ -e "${node}" ]] || break
   check_user_access "${node}"
 done
 for node in /dev/accel/accel*; do
-  [[ -e "${node}" ]] || break
   check_user_access "${node}"
 done
 
