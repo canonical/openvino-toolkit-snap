@@ -77,7 +77,8 @@ parts:
       - ocl-icd-libopencl1
       - libtbb12
       - libsnappy1v5
-      - intel-gpu-tools
+      - to amd64:
+        - intel-gpu-tools
 
 lint:
   ignore:
