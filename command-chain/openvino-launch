@@ -17,6 +17,11 @@ export PATH="${SNAP}/openvino/usr/bin":$PATH
 
 # Check if device node is an Intel GPU
 node_is_intel_gpu() {
+  if ! command -v intel_gpu_top >/dev/null 2>&1; then
+    # intel_gpu_top command unavailable for ARM64
+    # Assume for an ARM64 system that a GPU is not from Intel
+    return 1
+  fi
   node=$1
   render_device_name=$(echo "${node}" | cut -f4 -d"/") # e.g. renderD128
   gpu_info=$(intel_gpu_top -L | grep -B1 -w "${render_device_name}")
