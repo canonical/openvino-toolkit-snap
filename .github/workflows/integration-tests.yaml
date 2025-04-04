@@ -40,8 +40,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Build job file from template with oemscript provisioning
         env:
-          QUEUE: "dell-xps-13-9340-c32267"
-          PROVISION_DATA: "url: http://10.102.196.9/somerville/Platforms/jellyfish-treecko/FVR_X113/dell-bto-jammy-jellyfish-treecko-X113-20240131-14.iso"
+          QUEUE: "dell-precision-5690-0cc8-c33253"
+          PROVISION_DATA: "url: https://tel-image-cache.canonical.com/oem-share/somerville/Platforms/jellyfish-magmar/X119_A00/dell-bto-jammy-jellyfish-magmar-X119-20240104-9_A00.iso"
+          #QUEUE: "dell-xps-13-9340-c32267"
+          #PROVISION_DATA: "url: http://10.102.196.9/somerville/Platforms/jellyfish-treecko/FVR_X113/dell-bto-jammy-jellyfish-treecko-X113-20240131-14.iso"
         run: |
           sed -e "s|REPLACE_BRANCH|${BRANCH}|" \
           -e "s|REPLACE_QUEUE|${QUEUE}|" \
