@@ -40,9 +40,6 @@ parts:
       craftctl default
       git submodule update --init --recursive
       craftctl set version="$(git describe --tags)"
-    override-build: |
-      craftctl default
-      rm -rf ${CRAFT_PART_INSTALL}/usr/{share,include}
     build-packages:
       - ca-certificates
       - file
