@@ -102,7 +102,7 @@ parts:
       intel_graphics_compiler_build="18926"
       compute_runtime_version="25.13.33276.16"
       intel_level_zero_gpu_version="1.6.33276.16"
-      lib_igdgmm12_version="22.7.0"
+      libigdgmm12_version="22.7.0"
       wget https://github.com/intel/intel-graphics-compiler/releases/download/v${intel_graphics_compiler_version}/intel-igc-core-2_${intel_graphics_compiler_version}+${intel_graphics_compiler_build}_amd64.deb
       wget https://github.com/intel/intel-graphics-compiler/releases/download/v${intel_graphics_compiler_version}/intel-igc-opencl-2_${intel_graphics_compiler_version}+${intel_graphics_compiler_build}_amd64.deb
       wget https://github.com/intel/compute-runtime/releases/download/${compute_runtime_version}/intel-level-zero-gpu_${intel_level_zero_gpu_version}_amd64.deb
