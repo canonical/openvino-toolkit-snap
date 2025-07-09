@@ -13,6 +13,16 @@ platforms:
   arm64:
   amd64:
 
+layout:
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/intel-opencl:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/intel-opencl
+
+package-repositories:
+  - type: apt
+    ppa: kobuk-team/intel-graphics
+    priority: prefer
+    key-id: 0C0E6AF955CE463C03FC51574D098D70AFBE5E1F
+
 plugs:
   intel-npu:
     interface: custom-device
@@ -36,8 +46,7 @@ apps:
       - npu-libs # Intel NPU access (libs)
       - openvino-libs # OpenVINO runtime
     environment:
-      # Intel OpenCL libs install to /usr/local/lib
-      LD_LIBRARY_PATH: $SNAP/npu-libs:$SNAP/usr/local/lib:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: $SNAP/npu-libs:$LD_LIBRARY_PATH
       PYTHONPATH: $SNAP/lib/python3.12/site-packages:$PYTHONPATH
       OCL_ICD_VENDORS: $SNAP/etc/OpenCL/vendors
 
@@ -87,49 +96,29 @@ parts:
       - -usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0
       - -usr/lib/x86_64-linux-gnu/libicui18n.so.74.2
 
-  opencl-driver:
-    # Includes all the compute runtime and OpenCL bits needed for Intel GPU support
+  intel-graphics:
     plugin: nil
-    build-packages:
-      - wget
-    override-build: |
-      mkdir -p neo
-      cd neo
-      # Install Intel graphics compiler and compute runtime
-      # This is required to enable GPU support for OpenVINO
-      # https://docs.openvino.ai/2024/get-started/configurations/configurations-intel-gpu.html
-      intel_graphics_compiler_version="2.10.8"
-      intel_graphics_compiler_build="18926"
-      compute_runtime_version="25.13.33276.16"
-      intel_level_zero_gpu_version="1.6.33276.16"
-      libigdgmm12_version="22.7.0"
-      wget https://github.com/intel/intel-graphics-compiler/releases/download/v${intel_graphics_compiler_version}/intel-igc-core-2_${intel_graphics_compiler_version}+${intel_graphics_compiler_build}_amd64.deb
-      wget https://github.com/intel/intel-graphics-compiler/releases/download/v${intel_graphics_compiler_version}/intel-igc-opencl-2_${intel_graphics_compiler_version}+${intel_graphics_compiler_build}_amd64.deb
-      wget https://github.com/intel/compute-runtime/releases/download/${compute_runtime_version}/intel-level-zero-gpu_${intel_level_zero_gpu_version}_amd64.deb
-      wget https://github.com/intel/compute-runtime/releases/download/${compute_runtime_version}/intel-opencl-icd_${compute_runtime_version}_amd64.deb
-      wget https://github.com/intel/compute-runtime/releases/download/${compute_runtime_version}/libigdgmm12_${libigdgmm12_version}_amd64.deb
-      dpkg --root=$CRAFT_PART_INSTALL --force-all -i *.deb
-      # update paths to the Intel Installable Client Drivers (ICDs) for OpenCL
-      intel_icd="${CRAFT_PART_INSTALL}"/etc/OpenCL/vendors/intel.icd
-      intel_icd_so_path=$(cat ${intel_icd})
-      base_path="/snap/${SNAPCRAFT_PROJECT_NAME}/current"
-      echo "${base_path}""${intel_icd_so_path}" > "${intel_icd}"
-      intel_legacy1_icd="${CRAFT_PART_INSTALL}"/etc/OpenCL/vendors/intel_legacy1.icd
-      if [ -f ${intel_legacy1_icd} ]; then
-        intel_legacy1_icd_so_path=$(cat ${intel_legacy1_icd})
-        echo "${base_path}""${intel_legacy1_icd_so_path}" > "${intel_legacy1_icd}"
-      fi
-      # fix broken sym links
-      cd "${CRAFT_PART_INSTALL}"
-      ln -sf "${base_path}"/usr/bin/ocloc-24.39.1 etc/alternatives/ocloc
-      ln -sf "${base_path}"/etc/alternatives/ocloc usr/bin/ocloc
-      craftctl default
+    stage-packages:
+      - libigc-dev
+      - libigc-tools
+      - libigc2
+      - libigdfcl-dev
+      - libigdfcl2
+      - intel-ocloc
+      - intel-ocloc-dev
+      - intel-opencl-icd
+      - libze1
+      - libze-dev
+      - libze-intel-gpu-dev
+      - libze-intel-gpu1
+      - libigdgmm12
+      - libigdgmm-dev
 
   command-chain-openvino:
     plugin: dump
     source-type: git
     source: https://github.com/canonical/openvino-toolkit-snap.git
-    source-tag: 2024.6.0-4
+    source-tag: 2025.1.0-0
     stage:
       - command-chain/openvino-launch
 
