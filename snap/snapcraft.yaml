@@ -40,6 +40,10 @@ parts:
       craftctl default
       git submodule update --init --recursive
       craftctl set version="$(git describe --tags)"
+    override-build: |
+      # openvino build requires recent version of setuptools
+      pip install --upgrade setuptools --break-system-packages
+      craftctl default
     build-packages:
       - ca-certificates
       - file

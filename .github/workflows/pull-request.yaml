@@ -8,6 +8,8 @@ on:
       - '.github/workflows/smoke-tests.yaml'
     branches:
       - openvino-toolkit-2404
+  workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
