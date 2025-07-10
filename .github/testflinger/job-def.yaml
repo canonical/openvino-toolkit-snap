@@ -8,8 +8,8 @@ test_data:
       agent: "checkbox-openvino-toolkit-2404.snap"
     - local: REPLACE_ATTACHMENT_2
       agent: "sample-consumer.snap"
-    - local: ".github/testflinger/run-checkbox-openvino-toolkit-2404.sh"
-      agent: "run-checkbox-openvino-toolkit-2404.sh"
+    - local: ".github/testflinger/set-device-access.sh"
+      agent: "set-device-access.sh"
   test_cmds: |
 
     set -e
@@ -32,7 +32,7 @@ test_data:
     echo
 
     # Avoid GPG errors on old unsupported versions of Chrome, which we don't test anyway
-    _run sudo rm /etc/apt/sources.list.d/google-chrome.list
+    _run sudo rm -f /etc/apt/sources.list.d/google-chrome.list
 
     _run sudo snap refresh
     _run sudo snap install openvino-toolkit-2404 --channel latest/edge
@@ -43,18 +43,19 @@ test_data:
     _put attachments/test/checkbox-openvino-toolkit-2404.snap :/home/ubuntu/checkbox-openvino-toolkit-2404.snap
     _run sudo snap install --dangerous --classic /home/ubuntu/checkbox-openvino-toolkit-2404.snap
 
-    _put attachments/test/run-checkbox-openvino-toolkit-2404.sh :/home/ubuntu/run-checkbox-openvino-toolkit-2404.sh
+    _put attachments/test/set-device-access.sh :/home/ubuntu/set-device-access.sh
 
     # Run the validation twice:
     #
     # Run 1: original debs and kernel from the certified image
     # Run 2: upgraded debs and kernel, following a reboot
     #
-    _run bash run-checkbox-openvino-toolkit-2404.sh
+    _run sudo bash set-device-access.sh
+    _run checkbox-openvino-toolkit-2404.test-runner-automated
 
     _run sudo apt update
     _run sudo apt -y upgrade
     _run sudo reboot
     wait_for_ssh --allow-degraded
 
-    _run bash run-checkbox-openvino-toolkit-2404.sh
+    _run checkbox-openvino-toolkit-2404.test-runner-automated
