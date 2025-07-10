@@ -14,7 +14,6 @@ on:
       - '.github/testflinger/**'
     branches:
       - openvino-toolkit-2404
-      - frenchwr/bump-version-to-2025.2.0
   workflow_dispatch:
 
 concurrency:
