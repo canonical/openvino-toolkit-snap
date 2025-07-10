@@ -82,7 +82,7 @@ jobs:
           # Dell XPS 13 9340, Meteor Lake, 24.04
           - { queue: dell-xps-13-9340-c34207, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
           # Dell Pro Max 14, Arrow Lake, 24.04
-          - { queue: dell-pro-max-14-mc14250-0cf0-c36739, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
+          #- { queue: dell-pro-max-14-mc14250-0cf0-c36739, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
       fail-fast: false
     steps:
       - name: Check out code
@@ -122,6 +122,6 @@ jobs:
           git config --local user.name "GitHub Action"
           revision=$(snap info intel-npu-driver | grep latest/edge | cut -d "(" -f2 | cut -d ")" -f1)
           version=$(snap info intel-npu-driver | grep latest/edge | awk '{print $2}')
-          tag_name="${version}-rev${revision}"
-          git tag -a "${tag_name}" -m "Revision ${revision}"
+          tag_name="${version}-amd64-rev${revision}"
+          git tag -a "${tag_name}" -m "Revision ${revision} (amd64)"
           git push origin "${tag_name}"

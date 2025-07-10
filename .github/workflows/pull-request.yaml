@@ -15,9 +15,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build snap, run smoke tests, release to edge
-    runs-on: [self-hosted, linux, X64, xlarge, jammy]
+  release:
+    name: Release ${{ matrix.arch }} to latest/edge
+    runs-on: self-hosted-linux-${{ matrix.arch }}-jammy-xlarge
+    strategy:
+      matrix:
+        runner:
+          - amd64
+          - arm64
+      fail-fast: false
     steps:
       - name: Checkout the source
         uses: actions/checkout@v4
