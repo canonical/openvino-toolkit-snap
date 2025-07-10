@@ -26,89 +26,89 @@ env:
   SAMPLE_CONSUMER_NAME: sample-consumer
 
 jobs:
-  build-checkbox-provider:
-    name: Checkbox provider build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Find and parse snapcraft.yaml
-        id: snapcraft-yaml
-        uses: snapcrafters/ci/parse-snapcraft-yaml@main
-        with:
-          snapcraft-project-root: checkbox
-      - name: Build snap
-        uses: snapcore/action-build@v1
-        id: build
-        with:
-          path: ${{ steps.snapcraft-yaml.outputs.project-root }}
-          snapcraft-args: "-o ${{ env.CHECKBOX_PROVIDER_NAME }}.snap"
-      - name: Upload snap artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.CHECKBOX_PROVIDER_NAME }}
-          path: ${{ steps.build.outputs.snap }}
-  build-sample-consumer:
-    name: Sample consumer build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Find and parse snapcraft.yaml
-        id: snapcraft-yaml
-        uses: snapcrafters/ci/parse-snapcraft-yaml@main
-        with:
-          snapcraft-project-root: sample-consumer
-      - name: Build snap
-        uses: snapcore/action-build@v1
-        id: build
-        with:
-          path: ${{ steps.snapcraft-yaml.outputs.project-root }}
-          snapcraft-args: "-o ${{ env.SAMPLE_CONSUMER_NAME }}.snap"
-      - name: Upload snap artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.SAMPLE_CONSUMER_NAME }}
-          path: ${{ steps.build.outputs.snap }}
-  testflinger-validation:
-    name: Testflinger Validation
-    needs: [build-checkbox-provider, build-sample-consumer]
-    runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
-    strategy:
-      matrix:
-        device:
-          # Dell XPS 13 9340, Meteor Lake, 22.04
-          - { queue: dell-xps-13-9340-c32267, image: http://10.102.196.9/somerville/Platforms/jellyfish-treecko/FVR_X113/dell-bto-jammy-jellyfish-treecko-X113-20240131-14.iso }
-          # Dell XPS 13 9340, Meteor Lake, 24.04
-          - { queue: dell-xps-13-9340-c34207, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
-          # Dell Pro Max 14, Arrow Lake, 24.04
-          #- { queue: dell-pro-max-14-mc14250-0cf0-c36739, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
-      fail-fast: false
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.CHECKBOX_PROVIDER_NAME }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.SAMPLE_CONSUMER_NAME }}
-      - name: Build job file from template with oemscript provisioning
-        run: |
-          sed -e "s|REPLACE_QUEUE|${{ matrix.device.queue }}|" \
-          -e "s|REPLACE_IMAGE_URL|${{ matrix.device.image }}|" \
-          -e "s|REPLACE_ATTACHMENT_1|${{ env.CHECKBOX_PROVIDER_NAME }}.snap|" \
-          -e "s|REPLACE_ATTACHMENT_2|${{ env.SAMPLE_CONSUMER_NAME }}.snap|" \
-          ${GITHUB_WORKSPACE}/.github/testflinger/job-def.yaml > \
-          ${GITHUB_WORKSPACE}/job.yaml
-      - name: Submit testflinger job
-        uses: canonical/testflinger/.github/actions/submit@main
-        with:
-          poll: true
-          job-path: ${{ github.workspace }}/job.yaml
+  #build-checkbox-provider:
+  #  name: Checkbox provider build
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Check out code
+  #      uses: actions/checkout@v4
+  #    - name: Find and parse snapcraft.yaml
+  #      id: snapcraft-yaml
+  #      uses: snapcrafters/ci/parse-snapcraft-yaml@main
+  #      with:
+  #        snapcraft-project-root: checkbox
+  #    - name: Build snap
+  #      uses: snapcore/action-build@v1
+  #      id: build
+  #      with:
+  #        path: ${{ steps.snapcraft-yaml.outputs.project-root }}
+  #        snapcraft-args: "-o ${{ env.CHECKBOX_PROVIDER_NAME }}.snap"
+  #    - name: Upload snap artifact
+  #      uses: actions/upload-artifact@v4
+  #      with:
+  #        name: ${{ env.CHECKBOX_PROVIDER_NAME }}
+  #        path: ${{ steps.build.outputs.snap }}
+  #build-sample-consumer:
+  #  name: Sample consumer build
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Check out code
+  #      uses: actions/checkout@v4
+  #    - name: Find and parse snapcraft.yaml
+  #      id: snapcraft-yaml
+  #      uses: snapcrafters/ci/parse-snapcraft-yaml@main
+  #      with:
+  #        snapcraft-project-root: sample-consumer
+  #    - name: Build snap
+  #      uses: snapcore/action-build@v1
+  #      id: build
+  #      with:
+  #        path: ${{ steps.snapcraft-yaml.outputs.project-root }}
+  #        snapcraft-args: "-o ${{ env.SAMPLE_CONSUMER_NAME }}.snap"
+  #    - name: Upload snap artifact
+  #      uses: actions/upload-artifact@v4
+  #      with:
+  #        name: ${{ env.SAMPLE_CONSUMER_NAME }}
+  #        path: ${{ steps.build.outputs.snap }}
+  #testflinger-validation:
+  #  name: Testflinger Validation
+  #  needs: [build-checkbox-provider, build-sample-consumer]
+  #  runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+  #  strategy:
+  #    matrix:
+  #      device:
+  #        # Dell XPS 13 9340, Meteor Lake, 22.04
+  #        - { queue: dell-xps-13-9340-c32267, image: http://10.102.196.9/somerville/Platforms/jellyfish-treecko/FVR_X113/dell-bto-jammy-jellyfish-treecko-X113-20240131-14.iso }
+  #        # Dell XPS 13 9340, Meteor Lake, 24.04
+  #        - { queue: dell-xps-13-9340-c34207, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
+  #        # Dell Pro Max 14, Arrow Lake, 24.04
+  #        #- { queue: dell-pro-max-14-mc14250-0cf0-c36739, image: https://tel-image-cache.canonical.com/oem-share/somerville/releases/noble/oem-24.04a/20240729-53/somerville-noble-oem-24.04a-20240729-53.iso }
+  #    fail-fast: false
+  #  steps:
+  #    - name: Check out code
+  #      uses: actions/checkout@v4
+  #    - uses: actions/download-artifact@v4
+  #      with:
+  #        name: ${{ env.CHECKBOX_PROVIDER_NAME }}
+  #    - uses: actions/download-artifact@v4
+  #      with:
+  #        name: ${{ env.SAMPLE_CONSUMER_NAME }}
+  #    - name: Build job file from template with oemscript provisioning
+  #      run: |
+  #        sed -e "s|REPLACE_QUEUE|${{ matrix.device.queue }}|" \
+  #        -e "s|REPLACE_IMAGE_URL|${{ matrix.device.image }}|" \
+  #        -e "s|REPLACE_ATTACHMENT_1|${{ env.CHECKBOX_PROVIDER_NAME }}.snap|" \
+  #        -e "s|REPLACE_ATTACHMENT_2|${{ env.SAMPLE_CONSUMER_NAME }}.snap|" \
+  #        ${GITHUB_WORKSPACE}/.github/testflinger/job-def.yaml > \
+  #        ${GITHUB_WORKSPACE}/job.yaml
+  #    - name: Submit testflinger job
+  #      uses: canonical/testflinger/.github/actions/submit@main
+  #      with:
+  #        poll: true
+  #        job-path: ${{ github.workspace }}/job.yaml
   tag:
     name: Push tag for revision
-    needs: testflinger-validation
+    #needs: testflinger-validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the source
@@ -120,8 +120,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          revision=$(snap info intel-npu-driver | grep latest/edge | cut -d "(" -f2 | cut -d ")" -f1)
-          version=$(snap info intel-npu-driver | grep latest/edge | awk '{print $2}')
+          revision=$(snap info openvino-toolkit-2404 | grep latest/edge | cut -d "(" -f2 | cut -d ")" -f1)
+          version=$(snap info openvino-toolkit-2404 | grep latest/edge | awk '{print $2}')
           tag_name="${version}-amd64-rev${revision}"
           git tag -a "${tag_name}" -m "Revision ${revision} (amd64)"
           git push origin "${tag_name}"

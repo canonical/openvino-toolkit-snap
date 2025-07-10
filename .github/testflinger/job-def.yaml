@@ -31,6 +31,20 @@ test_data:
     echo "==========================================="
     echo
 
+    echo
+    echo "========== TARGET DEVICE OS INFO =========="
+    echo
+    echo ** OS Release **
+    echo
+    _run lsb_release -a
+    echo
+    echo ** Kernel **
+    echo
+    _run uname -a
+    echo
+    echo "==========================================="
+    echo
+
     # Avoid GPG errors on old unsupported versions of Chrome, which we don't test anyway
     _run sudo rm -f /etc/apt/sources.list.d/google-chrome.list
 
