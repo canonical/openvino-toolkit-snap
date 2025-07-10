@@ -40,7 +40,7 @@ test_data:
     _put attachments/test/sample-consumer.snap :/home/ubuntu/sample-consumer.snap
     _run sudo snap install --dangerous /home/ubuntu/sample-consumer.snap
     _run sudo snap install checkbox24
-    _put attachments/test/checkbox-openvino-toolkit-2404.snap :/home/ubuntu/checkbox-npu.snap
+    _put attachments/test/checkbox-openvino-toolkit-2404.snap :/home/ubuntu/checkbox-openvino-toolkit-2404.snap
     _run sudo snap install --dangerous --classic /home/ubuntu/checkbox-openvino-toolkit-2404.snap
 
     _put attachments/test/run-checkbox-openvino-toolkit-2404.sh :/home/ubuntu/run-checkbox-openvino-toolkit-2404.sh

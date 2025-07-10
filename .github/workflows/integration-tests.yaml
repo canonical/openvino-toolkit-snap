@@ -49,7 +49,7 @@ jobs:
           name: ${{ env.CHECKBOX_PROVIDER_NAME }}
           path: ${{ steps.build.outputs.snap }}
   build-sample-consumer:
-    name: Checkbox provider build
+    name: Sample consumer build
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
