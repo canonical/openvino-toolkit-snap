@@ -5,7 +5,7 @@ on:
     paths:
       - 'snap/**'
       - 'command-chain/**'
-      - '.github/workflows/smoke-tests.yaml'
+      - '.github/workflows/pull-request.yaml'
     branches:
       - openvino-toolkit-2404
   workflow_dispatch:
