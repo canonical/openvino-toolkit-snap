@@ -1,89 +1,60 @@
 job_queue: REPLACE_QUEUE
 output_timeout: 7200
 provision_data:
-  REPLACE_PROVISION_DATA
+  url: REPLACE_IMAGE_URL
 test_data:
+  attachments:
+    - local: REPLACE_ATTACHMENT_1
+      agent: "checkbox-openvino-toolkit-2404.snap"
+    - local: REPLACE_ATTACHMENT_2
+      agent: "sample-consumer.snap"
+    - local: ".github/testflinger/run-checkbox-openvino-toolkit-2404.sh"
+      agent: "run-checkbox-openvino-toolkit-2404.sh"
   test_cmds: |
 
-    # Exit immediately if a test fails
     set -e
 
-    # Clone repo from appropriate branch/commit.
-    ssh ubuntu@$DEVICE_IP '
-      sudo DEBIAN_FRONTEND=noninteractive apt update
-      sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
-      sudo DEBIAN_FRONTEND=noninteractive apt -y install git curl
-      git clone -b REPLACE_BRANCH \
-        https://github.com/canonical/openvino-toolkit-snap.git \
-        ~ubuntu/openvino-toolkit-snap
-      cd ~ubuntu/openvino-toolkit-snap
-      echo "Current git branch: $(git branch --show-current)"
-      echo "Latest commit:"
-      git log --name-status HEAD^..HEAD
-    '
+    # retrieve the tools installer
+    curl -Ls -o install_tools.sh https://raw.githubusercontent.com/canonical/hwcert-jenkins-tools/main/install_tools.sh
+    # install the scriptlets and other tools on the agent and the device, as necessary
+    export TOOLS_PATH=tools
+    source install_tools.sh $TOOLS_PATH
 
-    # Install dependencies
-    ssh ubuntu@$DEVICE_IP '
-      sudo snap install --classic snapcraft
-      sudo snap install lxd --channel=5.21/stable
-      sudo adduser ubuntu lxd
-      sudo snap refresh
-    '
+    # ensure device is available before continuing
+    wait_for_ssh --allow-degraded
 
-    # Disable swap and IPv6
-    ssh ubuntu@$DEVICE_IP '
-      sudo sysctl -w vm.swappiness=0
-      sudo echo "vm.swappiness = 0" | sudo tee -a /etc/sysctl.conf
-      sudo swapoff -a
-      echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-      echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-      echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-      sudo sysctl -p
-    '
+    echo
+    echo "====== TARGET DEVICE CONNECTION INFO ======"
+    echo
+    echo DEVICE_IP: ubuntu@$DEVICE_IP
+    echo
+    echo "==========================================="
+    echo
 
-    # Build and install openvino-toolkit-2404 snap
-    ssh ubuntu@$DEVICE_IP '
-      lxd init --auto
-      cd ~ubuntu/openvino-toolkit-snap
-      snapcraft --build-for=amd64
-      sudo snap install --dangerous ./openvino-toolkit-2404_*_amd64.snap
-    '
+    # Avoid GPG errors on old unsupported versions of Chrome, which we don't test anyway
+    _run sudo rm /etc/apt/sources.list.d/google-chrome.list
 
-    # Build and install sample-consumer snap
-    ssh ubuntu@$DEVICE_IP '
-      cd ~ubuntu/openvino-toolkit-snap/sample-consumer
-      snapcraft
-      sudo snap install --dangerous ./openvino-sample-consumer_1.0.0_amd64.snap
-    '
+    _run sudo snap refresh
+    _run sudo snap install openvino-toolkit-2404 --channel latest/edge
 
-    # Build and install checkbox-openvino-toolkit-2404 snap
-    ssh ubuntu@$DEVICE_IP '
-      cd ~ubuntu/openvino-toolkit-snap/checkbox
-      sudo snap install checkbox22
-      snapcraft
-      sudo snap install --dangerous --classic ./checkbox-openvino-toolkit-2404_*_amd64.snap
-    '
+    _put attachments/test/sample-consumer.snap :/home/ubuntu/sample-consumer.snap
+    _run sudo snap install --dangerous /home/ubuntu/sample-consumer.snap
+    _run sudo snap install checkbox24
+    _put attachments/test/checkbox-openvino-toolkit-2404.snap :/home/ubuntu/checkbox-npu.snap
+    _run sudo snap install --dangerous --classic /home/ubuntu/checkbox-openvino-toolkit-2404.snap
 
-    # Install test dependencies
-    ssh ubuntu@$DEVICE_IP '
-      checkbox-openvino-toolkit-2404.install-full-deps
-    '
+    _put attachments/test/run-checkbox-openvino-toolkit-2404.sh :/home/ubuntu/run-checkbox-openvino-toolkit-2404.sh
 
-    echo "[INFO] Sleeping for 60 seconds to allow NPU firmware to load."
-    sleep 60
+    # Run the validation twice:
+    #
+    # Run 1: original debs and kernel from the certified image
+    # Run 2: upgraded debs and kernel, following a reboot
+    #
+    _run bash run-checkbox-openvino-toolkit-2404.sh
 
-    # Enable non-root access to the NPU device node.
-    # Note, this must be run after the intel-npu-driver snap
-    # is installed in `install-full-deps` as the intel_vpu
-    # kernel module is re-loaded which resets permissions on the
-    # NPU device node.
-    ssh ubuntu@$DEVICE_IP '
-      sudo usermod -a -G render $USER
-      sudo chown root:render /dev/accel/accel*
-      sudo chmod g+rw /dev/accel/accel*
-    '
+    _run sudo apt update
+    _run sudo apt -y upgrade
+    _run sudo reboot
+    wait_for_ssh --allow-degraded
 
-    # Run tests
-    ssh ubuntu@$DEVICE_IP '
-      checkbox-openvino-toolkit-2404.test-runner-automated
-    '
+    _run bash run-checkbox-openvino-toolkit-2404.sh

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-optional_arg_A=$1
-optional_arg_B=$2
-if [ "${optional_arg_A}" = "--install_from_store" ] || [ "${optional_arg_B}" = "--install_from_store" ]; then
+optional_arg=$1
+if [ "${optional_arg}" = "--install_from_store" ]; then
   echo "Installing openvino-toolkit-2404 from latest/stable in the Snap Store."
   sudo snap install openvino-toolkit-2404
 fi
