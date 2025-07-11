@@ -34,7 +34,7 @@ test_data:
     echo
     echo "========== TARGET DEVICE OS INFO =========="
     echo
-    echo "*** OS Release ***""
+    echo "*** OS Release ***"
     echo
     _run lsb_release -a
     echo
