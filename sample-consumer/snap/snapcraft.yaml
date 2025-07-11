@@ -20,7 +20,6 @@ layout:
 package-repositories:
   - type: apt
     ppa: kobuk-team/intel-graphics
-    priority: prefer
     key-id: 0C0E6AF955CE463C03FC51574D098D70AFBE5E1F
 
 plugs:
