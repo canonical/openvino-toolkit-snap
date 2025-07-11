@@ -24,7 +24,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: 2025.1.0
+    source-tag: 2025.2.0
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -40,6 +40,10 @@ parts:
       craftctl default
       git submodule update --init --recursive
       craftctl set version="$(git describe --tags)"
+    override-build: |
+      # openvino build requires recent version of setuptools
+      pip install --upgrade setuptools --break-system-packages
+      craftctl default
     build-packages:
       - ca-certificates
       - file

@@ -8,7 +8,7 @@ Prerequisites:
 
 ```
 sudo snap install --classic snapcraft
-sudo snap install checkbox22
+sudo snap install checkbox24
 sudo snap install lxd
 sudo adduser ubuntu lxd
 lxd init --auto
@@ -36,21 +36,11 @@ sudo snap install --dangerous --classic ./checkbox-openvino-toolkit-2404_1.0.0_a
 checkbox-openvino-toolkit-2404.install-full-deps
 ```
 
-Among the dependencies that are installed is the `openvino-ai-plugins-gimp` snap from the store. Snapd interfaces are also manually connected where required.
-
-By default, `checkbox-openvino-toolkit-2404.install-full-deps` will NOT install the `openvino-toolkit-2404` snap. This is by design as typically tests will be run on a modified version of the snap built and installed locally. To install the latest version from the `latest/beta` channel in the Snap Store use:
+By default, `checkbox-openvino-toolkit-2404.install-full-deps` will NOT install the `openvino-toolkit-2404` snap. This is by design as typically tests will be run on a modified version of the snap built and installed locally. To install the latest version from the `latest/stable` channel in the Snap Store use:
 
 ```
 checkbox-openvino-toolkit-2404.install-full-deps --install_from_store
 ```
-
-Note that the checkbox tests will install models to the same path(s) used by the `openvino-ai-plugins-gimp.model-setup` application. This is because the application has permissions to only write to certain paths, and thus users are not allowed the flexibility to install to any arbitrary path. Therefore, in order for the GIMP plugin tests to run, the models and a config file should be absent in order to test whether the application creates these files in the expected locations. Between checkbox runs, you can remove these files and directories by passing the `--clean_plugin_dirs` option:
-
-```
-checkbox-openvino-toolkit-2404.install-full-deps --clean_plugin_dirs
-```
-
-**IMPORTANT**: please use this with caution as it will remove models that you may have previously installed to a machine for running the OpenVINO AI plugins with GIMP.
 
 ## Automated run
 
