@@ -38,7 +38,7 @@ plugs:
 apps:
   validate-openvino:
     command-chain: ["command-chain/openvino-launch"]
-    command: usr/bin/python3 $SNAP/validate_openvino.py
+    command: /usr/bin/python3 $SNAP/validate_openvino.py
     plugs:
       - opengl # Intel GPU access (device nodes)
       - intel-npu # Intel NPU access (device node)
@@ -55,45 +55,6 @@ parts:
     plugin: dump
     stage:
       - validate_openvino.py
-
-  python-deps:
-    source: src/
-    plugin: python
-    python-packages: 
-      - pytest
-      - numpy>=1.16.6,<2.3.0 # openvino dep
-      - openvino-telemetry>=2023.2.1 # openvino dep
-      - packaging # openvino dep
-    stage-packages:
-      - python3-minimal # python interpreter
-      - python3.12-minimal # python interpreter
-      - libva2 # openvino gpu plugin dep
-      - libgl1 # opencv-python dep
-      - libglu1-mesa # opencv-python dep
-      - libxcb1 # opencv-python dep
-      - libice6 # opencv-python dep
-      - libsm6 # opencv-python dep
-      - libx11-6 # opencv-python dep
-      - libxext6 # opencv-python dep
-    stage:
-      - -usr/lib/x86_64-linux-gnu/libGLU.so.1.3.1
-      - -usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libicuio.so.74.2
-      - -usr/lib/x86_64-linux-gnu/libicutest.so.74.2
-      - -usr/lib/x86_64-linux-gnu/libvulkan.so.1.3.275
-      - -usr/lib/x86_64-linux-gnu/libOpenGL.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0
-      - -usr/lib/x86_64-linux-gnu/libXxf86vm.so.1.0.0
-      - -usr/lib/x86_64-linux-gnu/libicutu.so.74.2
-      - -usr/lib/x86_64-linux-gnu/libxcb-dri2.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-glx.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-present.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-randr.so.0.1.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-sync.so.1.0.0
-      - -usr/lib/x86_64-linux-gnu/libxcb-xfixes.so.0.0.0
-      - -usr/lib/x86_64-linux-gnu/libxshmfence.so.1.0.0
-      - -usr/lib/x86_64-linux-gnu/libicui18n.so.74.2
 
   intel-graphics:
     plugin: nil
@@ -117,7 +78,7 @@ parts:
     plugin: dump
     source-type: git
     source: https://github.com/canonical/openvino-toolkit-snap.git
-    source-tag: 2025.1.0-0
+    source-tag: 2025.2.0-amd64-rev30
     stage:
       - command-chain/openvino-launch
 
