@@ -4,3 +4,8 @@ core = ov.Core()
 devices = core.get_available_devices()
 
 print(f"Supported devices: {devices}")
+
+import openvino_tokenizers
+import openvino_genai
+
+print("Successfully imported openvino_tokenizers and openvino_genai")

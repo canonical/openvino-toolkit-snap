@@ -21,6 +21,7 @@ slots:
       - /
 
 parts:
+
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
@@ -36,9 +37,12 @@ parts:
       - -DCPACK_GENERATOR=DEB
       - -DENABLE_SAMPLES=OFF
       - -DENABLE_PYTHON_PACKAGING=ON
+      - -DOPENVINO_EXTRA_MODULES=./openvino.genai
+      - -DCPACK_ARCHIVE_COMPONENT_INSTALL=OFF
     override-pull: |
       craftctl default
       git submodule update --init --recursive
+      git clone -b 2025.2.0.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
       craftctl set version="$(git describe --tags)"
     override-build: |
       # openvino build requires recent version of setuptools
@@ -80,6 +84,39 @@ parts:
       - libsnappy1v5
       - to amd64:
         - intel-gpu-tools
+    organize:
+      usr/runtime/lib/intel64/libopenvino_tokenizers.so: usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libopenvino_tokenizers.so
+      usr/runtime/lib/intel64/libopenvino_genai.*: usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/
+      usr/python/openvino_genai: usr/lib/python3/dist-packages/openvino_genai
+
+  openvino-deps:
+    source: .
+    plugin: python
+    python-packages:
+      - numpy==2.2.6
+      - packaging==25.0
+    organize:
+      lib/python3.12/site-packages/numpy: usr/lib/python3/dist-packages/numpy
+      lib/python3.12/site-packages/numpy.libs: usr/lib/python3/dist-packages/numpy.libs
+      lib/python3.12/site-packages/packaging: usr/lib/python3/dist-packages/packaging
+
+  openvino-tokenizers:
+    # build openvino_tokenizers from source to ensure binary compatability with openvino
+    after: [openvino]
+    source-type: git
+    source: https://github.com/openvinotoolkit/openvino_tokenizers
+    source-tag: 2025.2.0.0
+    plugin: nil
+    build-packages:
+    - libtbb-dev
+    build-environment:
+      - OpenVINO_DIR: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/cmake
+    override-build: |
+      # note, extra-index-url is needed for build dependencies only
+      pip install --break-system-packages --no-deps . --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly
+      cp -r $CRAFT_PART_BUILD/python $CRAFT_PART_INSTALL
+    organize:
+      python/openvino_tokenizers: usr/lib/python3/dist-packages/openvino_tokenizers
 
 lint:
   ignore:
