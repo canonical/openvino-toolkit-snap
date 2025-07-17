@@ -3,7 +3,7 @@
 # Set non-root access to NPU device nodes.
 #
 
-if [ "${SNAP_UID}" -ne 0 ]; then
+if [ "${UID}" -ne 0 ]; then
   >&2 echo "
 Please re-run the command with sudo:
 
