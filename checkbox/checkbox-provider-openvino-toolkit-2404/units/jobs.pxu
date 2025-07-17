@@ -75,7 +75,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | tail -n1 | cut -f2 -d":")
+  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
   if ! echo ${supported_devices} | grep -qw "CPU" ; then
     >&2 echo "Test failure: CPU not detected by OpenVINO Python API."
     exit 1
@@ -93,7 +93,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | tail -n1 | cut -f2 -d":")
+  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
   if ! echo ${supported_devices} | grep -qw "GPU" ; then
     >&2 echo "Test failure: GPU not detected by OpenVINO Python API."
     exit 1
@@ -111,7 +111,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | tail -n1 | cut -f2 -d":")
+  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
   if ! echo ${supported_devices} | grep -qw "NPU" ; then
     >&2 echo "Test failure: NPU not detected by OpenVINO Python API."
     exit 1
