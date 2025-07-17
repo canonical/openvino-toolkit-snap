@@ -38,7 +38,7 @@ plugs:
 apps:
   validate-openvino:
     command-chain: ["command-chain/openvino-launch"]
-    command: /usr/bin/python3 $SNAP/validate_openvino.py
+    command: ./validate_openvino.py
     plugs:
       - opengl # Intel GPU access (device nodes)
       - intel-npu # Intel NPU access (device node)
