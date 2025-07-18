@@ -9,7 +9,7 @@
 
 CONTENT_PATH="${SNAP}/openvino"
 if [ ! -d "${CONTENT_PATH}" ] && grep -qw "GenuineIntel" /proc/cpuinfo; then
-  echo "Warning: ${CONTENT_PATH} not present inside ${SNAP_NAME} snap. Please install the snap using 'sudo snap install openvino-toolkit-2404 --beta' and restart the application."
+  echo "Warning: ${CONTENT_PATH} not present inside ${SNAP_NAME} snap. Please install the snap using 'sudo snap install openvino-toolkit-2404' and restart the application."
 fi
 export LD_LIBRARY_PATH="${SNAP}/openvino/usr/lib/$(uname -m)-linux-gnu":$LD_LIBRARY_PATH
 export PYTHONPATH="${SNAP}/openvino/usr/lib/python3/dist-packages":$PYTHONPATH
