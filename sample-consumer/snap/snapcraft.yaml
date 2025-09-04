@@ -37,7 +37,7 @@ plugs:
 
 apps:
   validate-openvino:
-    command-chain: ["command-chain/openvino-launch"]
+    command-chain: ["command-chain/source-content-producer"]
     command: ./validate_openvino.py
     plugs:
       - opengl # Intel GPU access (device nodes)
@@ -74,13 +74,11 @@ parts:
       - libigdgmm12
       - libigdgmm-dev
 
-  command-chain-openvino:
+  command-chain:
     plugin: dump
-    source-type: git
-    source: https://github.com/canonical/openvino-toolkit-snap.git
-    source-tag: 2025.2.0-amd64-rev30
-    stage:
-      - command-chain/openvino-launch
+    source: command-chain/
+    organize:
+      source-content-producer: command-chain/source-content-producer
 
 lint:
   ignore:

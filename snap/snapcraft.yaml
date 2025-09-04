@@ -118,6 +118,12 @@ parts:
     organize:
       python/openvino_tokenizers: usr/lib/python3/dist-packages/openvino_tokenizers
 
+  command-chain:
+    plugin: dump
+    source: command-chain/
+    organize:
+      openvino-launch: command-chain/openvino-launch
+
 lint:
   ignore:
     - library:
