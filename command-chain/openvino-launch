@@ -66,5 +66,3 @@ done
 for node in /dev/accel/accel*; do
   check_user_access "${node}"
 done
-
-exec "$@"
