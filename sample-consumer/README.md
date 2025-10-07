@@ -1,4 +1,4 @@
-# Sample content consumer app for openvino-toolkit-2404
+# Sample content consumer app for `openvino-toolkit-2404`
 
 ## Building
 
@@ -10,6 +10,13 @@ snapcraft
 
 ```
 sudo snap install --dangerous ./openvino-sample-consumer_1.0.0_amd64.snap
+```
+
+If you have not already, also install the `openvino-toolkit-2404` and `intel-npu-driver` snaps. The first is required while the second is optional for machines containing an Intel NPU, which is an AI inference accelerator built into Intel Core Ultra CPUs starting with Meteor Lake.
+
+```
+sudo snap install openvino-toolkit-2404 # required
+sudo snap install intel-npu-driver # optional
 ```
 
 ## Connecting snapd interfaces

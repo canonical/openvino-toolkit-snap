@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Source wrapper scripts from content producer snap.
+#
+
+shopt -s nullglob
+
+for wrapper in \
+  "${SNAP}"/openvino/command-chain/openvino-launch* ;
+do
+  source "${wrapper}"
+done
+exec "$@"
