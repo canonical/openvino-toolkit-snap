@@ -3,10 +3,21 @@ base: core24
 summary: Intel's OpenVINO Toolkit
 description: |
   OpenVINO™ is an open-source toolkit for optimizing and deploying AI inference.
+  This snap also includes the OpenVINO GenAI extensions. For more information, visit https://openvino.ai
+
+  For Intel NPU support, make sure to also install the intel-npu-driver snap:
+
+  sudo snap install intel-npu-driver
 
 grade: stable
 confinement: strict
-adopt-info: openvino
+version: 2025.4.0
+
+website: https://openvino.ai
+contact: https://github.com/canonical/openvino-toolkit-snap/issues
+issues: https://github.com/canonical/openvino-toolkit-snap/issues
+source-code: https://github.com/openvinotoolkit/openvino
+license: Apache-2.0
 
 platforms:
   arm64:
@@ -25,7 +36,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: 2025.2.0
+    source-tag: $CRAFT_PROJECT_VERSION
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -42,8 +53,7 @@ parts:
     override-pull: |
       craftctl default
       git submodule update --init --recursive
-      git clone -b 2025.2.0.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
-      craftctl set version="$(git describe --tags)"
+      git clone -b $CRAFT_PROJECT_VERSION.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
     override-build: |
       # openvino build requires recent version of setuptools
       pip install --upgrade setuptools --break-system-packages
@@ -105,7 +115,7 @@ parts:
     after: [openvino]
     source-type: git
     source: https://github.com/openvinotoolkit/openvino_tokenizers
-    source-tag: 2025.2.0.0
+    source-tag: $CRAFT_PROJECT_VERSION.0
     plugin: nil
     build-packages:
     - libtbb-dev

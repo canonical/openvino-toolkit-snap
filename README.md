@@ -1,6 +1,10 @@
 # openvino-toolkit-snap
 
-This is a content producer snap that provides the OpenVINO runtime libraries for consumption by downstream applications.
+This is a content producer snap that provides the OpenVINO runtime libraries for consumption by downstream applications. It packages the following components:
+
+- OpenVINO Toolkit
+- OpenVINO GenAI
+- openVINO Tokenizers
 
 ## Sample Python applications
 

@@ -33,6 +33,17 @@ plugs:
     target: $SNAP/openvino
 
 apps:
+  get-model:
+    command-chain: ["command-chain/source-content-producer"]
+    command: ./get_model.py
+    plugs:
+      - network
+      - openvino-libs # OpenVINO runtime
+      - accel
+    environment:
+      PYTHONPATH: $SNAP/optimum-cli/lib/python3.12/site-packages:$PYTHONPATH
+      PATH: $SNAP/optimum-cli/usr/bin:$SNAP/optimum-cli/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/optimum-cli/lib:$SNAP/optimum-cli/usr/lib:$LD_LIBRARY_PATH
   validate-openvino:
     command-chain: ["command-chain/source-content-producer"]
     command: ./validate_openvino.py
@@ -47,11 +58,31 @@ apps:
       OCL_ICD_VENDORS: $SNAP/etc/OpenCL/vendors
 
 parts:
-  validate-openvino:
+  python-src:
     source: src/
     plugin: dump
     stage:
       - validate_openvino.py
+      - get_model.py
+
+  optimum-cli:
+    source: .
+    plugin: python
+    build-environment:
+      - PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+    python-packages:
+      - optimum[openvino]
+    stage:
+      - -lib/python3.12/site-packages/openvino*
+      - -lib/python3.12/site-packages/numpy*
+      - -lib/python3.12/site-packages/packaging*
+      - -**/__pycache__
+      - -**/*.pyc
+    organize:
+      lib: optimum-cli/lib
+      usr/lib: optimum-cli/usr/lib
+      bin: optimum-cli/bin
+      usr/bin: optimum-cli/usr/bin
 
   intel-graphics:
     plugin: nil

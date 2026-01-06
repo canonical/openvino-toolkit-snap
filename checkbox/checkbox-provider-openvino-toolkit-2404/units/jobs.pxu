@@ -65,6 +65,19 @@ command:
       exit 1
   fi
 
+id: python/download_model
+category_id: openvino
+flags: simple
+_summary: Download a model and convert to OV IR format using optimum-cli
+estimated_duration: 5s
+requires:
+  executable.name == 'openvino-sample-consumer.get-model'
+command:
+  # reset environment vars to prevent python environment conflicts
+  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
+  openvino-sample-consumer.get-model TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  echo "Test success: model downloaded and converted to OpenVINO IR format."
+
 id: python/devices_avail_cpu
 category_id: openvino
 flags: simple
@@ -75,12 +88,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
-  if ! echo ${supported_devices} | grep -qw "CPU" ; then
-    >&2 echo "Test failure: CPU not detected by OpenVINO Python API."
-    exit 1
-  fi
-  echo "Test success: found CPU in supported devices: ${supported_devices}"
+  openvino-sample-consumer.validate-openvino TinyLlama/TinyLlama-1.1B-Chat-v1.0 CPU
 
 id: python/devices_avail_gpu
 category_id: openvino
@@ -93,12 +101,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
-  if ! echo ${supported_devices} | grep -qw "GPU" ; then
-    >&2 echo "Test failure: GPU not detected by OpenVINO Python API."
-    exit 1
-  fi
-  echo "Test success: found GPU in supported devices: ${supported_devices}"
+  openvino-sample-consumer.validate-openvino TinyLlama/TinyLlama-1.1B-Chat-v1.0 GPU
 
 id: python/devices_avail_npu
 category_id: openvino
@@ -111,9 +114,4 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  supported_devices=$(openvino-sample-consumer.validate-openvino | awk -F ':' '/Supported devices/{print $2}')
-  if ! echo ${supported_devices} | grep -qw "NPU" ; then
-    >&2 echo "Test failure: NPU not detected by OpenVINO Python API."
-    exit 1
-  fi
-  echo "Test success: found NPU in supported devices: ${supported_devices}"
+  openvino-sample-consumer.validate-openvino TinyLlama/TinyLlama-1.1B-Chat-v1.0 NPU
