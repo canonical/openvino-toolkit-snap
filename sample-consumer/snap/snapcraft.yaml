@@ -23,9 +23,6 @@ package-repositories:
     key-id: 0C0E6AF955CE463C03FC51574D098D70AFBE5E1F
 
 plugs:
-  intel-npu:
-    interface: custom-device
-    custom-device: intel-npu-device
   npu-libs:
     interface: content
     content: npu-libs-2404
@@ -41,7 +38,7 @@ apps:
     command: ./validate_openvino.py
     plugs:
       - opengl # Intel GPU access (device nodes)
-      - intel-npu # Intel NPU access (device node)
+      - accel # Intel NPU access (device node)
       - npu-libs # Intel NPU access (libs)
       - openvino-libs # OpenVINO runtime
     environment:
