@@ -14,7 +14,6 @@ on:
       - '.github/testflinger/**'
     branches:
       - openvino-toolkit-2404
-      - feature/bump-version-2025.4.0 # temporary testing branch
   workflow_dispatch:
 
 concurrency:
