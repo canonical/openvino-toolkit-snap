@@ -4,7 +4,7 @@ This is a content producer snap that provides the OpenVINO runtime libraries for
 
 - OpenVINO Toolkit
 - OpenVINO GenAI
-- openVINO Tokenizers
+- OpenVINO Tokenizers
 
 ## Sample Python applications
 

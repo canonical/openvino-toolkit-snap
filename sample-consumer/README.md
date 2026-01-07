@@ -3,7 +3,7 @@
 ## Building
 
 ```
-snapcraft
+snapcraft pack
 ```
 
 ## Installing

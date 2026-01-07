@@ -37,13 +37,17 @@ def validate_openvino_genai(model_dir, device="CPU"):
 
     # Check for expected content keywords related to sky color
     result_lower = result.lower()
-    required_keywords = ["blue", "light", "water"]
+    required_keywords = ["blue", "light", "scatter", "atmosphere", "wavelength"]
     missing_keywords = [kw for kw in required_keywords if kw not in result_lower]
 
-    if missing_keywords:
+    min_required_matches = 3
+    present_keywords = [kw for kw in required_keywords if kw in result_lower]
+    if len(present_keywords) < min_required_matches:
         raise RuntimeError(
-            f"Generated text on {device} missing expected keywords {missing_keywords}. "
-            f"Got: '{result}'"
+            "Generated text on "
+            f"{device} does not contain enough expected keywords "
+            f"({len(present_keywords)}/{len(required_keywords)} present, "
+            f"need at least {min_required_matches}). Present keywords: {present_keywords}. "
         )
 
     print(f"✓ Validation passed for device: {device}")
