@@ -62,3 +62,7 @@ test_data:
     _run checkbox-openvino-toolkit-2404.install-full-deps
     _run sudo bash set-device-access.sh
     _run checkbox-openvino-toolkit-2404.test-runner-automated
+reserve_data:
+  ssh_keys:
+    - lp:wfrench
+  timeout: 21600
