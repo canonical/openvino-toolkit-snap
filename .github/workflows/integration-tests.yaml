@@ -180,6 +180,13 @@ jobs:
           echo "id=$job_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Checkout partner-eng-gh-actions repo
+        uses: actions/checkout@v6
+        with:
+          repository: canonical/partner-eng-gh-actions
+          ref: main
+          token: ${{ secrets.PE_BOT_PAT }}
+          path: .github/actions/partner-eng-gh-actions
       - name: Generate TO start-payload
         run: |
           test_plan=$(grep "^unit = " ${GITHUB_WORKSPACE}/.github/testflinger/checkbox-launcher | cut -d '=' -f2 | xargs)
@@ -205,7 +212,7 @@ jobs:
           jq '.environment = "${{ steps.artifacts.outputs.env1 }}"' start-payload-0.json > start-payload-1.json
       - name: Upload first test results to test observer
         if: steps.artifacts.outputs.tarball0 != ''
-        uses: canonical/partner-eng-gh-actions/.github/actions/test-observer-uploader@v8.2
+        uses: ./.github/actions/partner-eng-gh-actions/.github/actions/test-observer-uploader
         with:
           results_type: checkbox
           owner: kobuk
@@ -215,7 +222,7 @@ jobs:
           test_observer_url: ${{ env.TEST_OBSERVER_URL }}
       - name: Upload second test results to test observer
         if: steps.artifacts.outputs.tarball1 != ''
-        uses: canonical/partner-eng-gh-actions/.github/actions/test-observer-uploader@v8.2
+        uses: ./.github/actions/partner-eng-gh-actions/.github/actions/test-observer-uploader
         with:
           results_type: checkbox
           owner: kobuk
