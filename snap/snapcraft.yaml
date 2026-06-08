@@ -11,7 +11,7 @@ description: |
 
 grade: stable
 confinement: strict
-version: 2026.2.0
+adopt-info: openvino
 
 website: https://openvino.ai
 contact: https://github.com/canonical/openvino-toolkit-snap/issues
@@ -36,7 +36,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: $CRAFT_PROJECT_VERSION
+    source-tag: 2026.2.0
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -52,8 +52,9 @@ parts:
       - -DCPACK_ARCHIVE_COMPONENT_INSTALL=OFF
     override-pull: |
       craftctl default
+      craftctl set version="$(git describe --tags | tr -d 'v')"
       git submodule update --init --recursive
-      git clone -b $CRAFT_PROJECT_VERSION.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
+      git clone -b 2026.2.0.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
       # apply pybind11 fix to openvino.genai
       # https://github.com/openvinotoolkit/openvino.genai/pull/3915
       cd openvino.genai
@@ -122,7 +123,7 @@ parts:
     after: [openvino]
     source-type: git
     source: https://github.com/openvinotoolkit/openvino_tokenizers
-    source-tag: $CRAFT_PROJECT_VERSION.0
+    source-tag: 2026.2.0.0
     plugin: nil
     build-packages:
     - libtbb-dev
