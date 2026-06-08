@@ -12,7 +12,7 @@ test_data:
       agent: "set-device-access.sh"
   test_cmds: |
 
-    set -e
+    set -x
 
     # retrieve the tools installer
     curl -Ls -o install_tools.sh https://raw.githubusercontent.com/canonical/hwcert-jenkins-tools/main/install_tools.sh
@@ -31,20 +31,6 @@ test_data:
     echo "==========================================="
     echo
 
-    echo
-    echo "========== TARGET DEVICE OS INFO =========="
-    echo
-    echo "*** OS Release ***"
-    echo
-    _run lsb_release -a
-    echo
-    echo "*** Kernel ***"
-    echo
-    _run uname -a
-    echo
-    echo "==========================================="
-    echo
-
     # Avoid GPG errors on old unsupported versions of Chrome, which we don't test anyway
     _run sudo rm -f /etc/apt/sources.list.d/google-chrome.list
 
@@ -59,6 +45,22 @@ test_data:
 
     _put attachments/test/set-device-access.sh :/home/ubuntu/set-device-access.sh
 
+    # Run the validation twice:
+    #
+    # Run 1: original debs and kernel from the certified image
+    # Run 2: upgraded debs and kernel, following a reboot
+    #
     _run checkbox-openvino-toolkit-2404.install-full-deps
     _run sudo bash set-device-access.sh
     _run checkbox-openvino-toolkit-2404.test-runner-automated
+    mkdir -p artifacts
+    _get '/home/ubuntu/.local/share/checkbox-ng/*.tar.xz' artifacts/
+
+    _run sudo apt update
+    _run sudo apt -y upgrade
+    _run sudo reboot
+    wait_for_ssh --allow-degraded
+
+    _run sudo bash set-device-access.sh
+    _run checkbox-openvino-toolkit-2404.test-runner-automated
+    _get '/home/ubuntu/.local/share/checkbox-ng/*.tar.xz' artifacts/

@@ -11,7 +11,7 @@ description: |
 
 grade: stable
 confinement: strict
-version: 2025.4.0
+version: 2026.2.0
 
 website: https://openvino.ai
 contact: https://github.com/canonical/openvino-toolkit-snap/issues
@@ -54,6 +54,13 @@ parts:
       craftctl default
       git submodule update --init --recursive
       git clone -b $CRAFT_PROJECT_VERSION.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
+      # apply pybind11 fix to openvino.genai
+      # https://github.com/openvinotoolkit/openvino.genai/pull/3915
+      cd openvino.genai
+      git remote add frenchwr https://github.com/frenchwr/openvino.genai.git
+      git fetch frenchwr frenchwr/pybind11-fix
+      git cherry-pick b67a24ed9a2ca0960925b4b3507d0b2eabaa0357
+      cd ..
     override-build: |
       # openvino build requires recent version of setuptools
       pip install --upgrade setuptools --break-system-packages

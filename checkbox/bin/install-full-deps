@@ -21,4 +21,4 @@ then
 fi
 
 sudo DEBIAN_FRONTEND=noninteractive apt install -y intel-gpu-tools
-sudo snap install intel-npu-driver
+sudo snap install intel-npu-driver --edge
