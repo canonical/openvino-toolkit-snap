@@ -16,7 +16,7 @@ concurrency:
 env:
   CHECKBOX_PROVIDER_NAME: checkbox-openvino-toolkit-2404
   SAMPLE_CONSUMER_NAME: sample-consumer
-  TEST_OBSERVER_URL: https://test-observer-api-staging.canonical.com
+  TEST_OBSERVER_URL: https://test-observer-api.canonical.com
 
 jobs:
   build-checkbox-provider:
