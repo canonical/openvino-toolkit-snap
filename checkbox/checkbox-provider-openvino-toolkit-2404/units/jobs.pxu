@@ -116,35 +116,35 @@ command:
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
   openvino-sample-consumer.validate-openvino TinyLlama/TinyLlama-1.1B-Chat-v1.0 NPU
 
-id: python/Qwen-2.5-3B-prepare
+id: python/Qwen-2.5-1.5B-Instruct-prepare
 category_id: openvino
 flags: simple
-_summary: Download Qwen-2.5-3B and convert to OV IR format using optimum-cli
+_summary: Download Qwen-2.5-1.5B-Instruct and convert to OV IR format using optimum-cli
 estimated_duration: 5s
 requires:
   executable.name == 'openvino-sample-consumer.get-model'
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.get-model Qwen/Qwen2.5-3B
-  echo "Test success: Qwen-2.5-3B model downloaded and converted to OpenVINO IR format."
+  openvino-sample-consumer.get-model Qwen/Qwen2.5-1.5B-Instruct
+  echo "Test success: Qwen-2.5-1.5B-Instruct model downloaded and converted to OpenVINO IR format."
 
-id: python/Qwen-2.5-3B-cpu-inference
+id: python/Qwen-2.5-1.5B-Instruct-cpu-inference
 category_id: openvino
 flags: simple
-_summary: Perform CPU inference using OpenVINO and Qwen-2.5-3B
+_summary: Perform CPU inference using OpenVINO and Qwen-2.5-1.5B-Instruct
 estimated_duration: 5s
 requires:
   executable.name == 'openvino-sample-consumer.validate-openvino'
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-3B CPU
+  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-1.5B-Instruct CPU
 
-id: python/Qwen-2.5-3B-gpu-inference
+id: python/Qwen-2.5-1.5B-Instruct-gpu-inference
 category_id: openvino
 flags: simple
-_summary: Perform GPU inference using OpenVINO and Qwen-2.5-3B
+_summary: Perform GPU inference using OpenVINO and Qwen-2.5-1.5B-Instruct
 estimated_duration: 5s
 requires:
   executable.name == 'openvino-sample-consumer.validate-openvino'
@@ -152,12 +152,12 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-3B GPU
+  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-1.5B-Instruct GPU
 
-id: python/Qwen-2.5-3B-npu-inference
+id: python/Qwen-2.5-1.5B-Instruct-npu-inference
 category_id: openvino
 flags: simple
-_summary: Perform NPU inference using OpenVINO and Qwen-2.5-3B
+_summary: Perform NPU inference using OpenVINO and Qwen-2.5-1.5B-Instruct
 estimated_duration: 5s
 requires:
   executable.name == 'openvino-sample-consumer.validate-openvino'
@@ -165,55 +165,5 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-3B NPU
+  openvino-sample-consumer.validate-openvino Qwen/Qwen2.5-1.5B-Instruct NPU
 
-id: python/Mistral-7B-v0.1-prepare
-category_id: openvino
-flags: simple
-_summary: Download Mistral-7B-v0.1 model and convert to OV IR format using optimum-cli
-estimated_duration: 5s
-requires:
-  executable.name == 'openvino-sample-consumer.get-model'
-command:
-  # reset environment vars to prevent python environment conflicts
-  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.get-model mistralai/Mistral-7B-v0.1
-  echo "Test success: Mistral-7B-v0.1 model downloaded and converted to OpenVINO IR format."
-
-id: python/Mistral-7B-v0.1-cpu-inference
-category_id: openvino
-flags: simple
-_summary: Perform CPU inference using OpenVINO and Mistral-7B-v0.1
-estimated_duration: 5s
-requires:
-  executable.name == 'openvino-sample-consumer.validate-openvino'
-command:
-  # reset environment vars to prevent python environment conflicts
-  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino mistralai/Mistral-7B-v0.1 CPU
-
-id: python/Mistral-7B-v0.1-gpu-inference
-category_id: openvino
-flags: simple
-_summary: Perform GPU inference using OpenVINO and Mistral-7B-v0.1
-estimated_duration: 5s
-requires:
-  executable.name == 'openvino-sample-consumer.validate-openvino'
-  host_gpu.state == 'present'
-command:
-  # reset environment vars to prevent python environment conflicts
-  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino mistralai/Mistral-7B-v0.1 GPU
-
-id: python/Mistral-7B-v0.1-npu-inference
-category_id: openvino
-flags: simple
-_summary: Perform NPU inference using OpenVINO and Mistral-7B-v0.1
-estimated_duration: 5s
-requires:
-  executable.name == 'openvino-sample-consumer.validate-openvino'
-  host_npu.state == 'present'
-command:
-  # reset environment vars to prevent python environment conflicts
-  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.validate-openvino mistralai/Mistral-7B-v0.1 NPU
