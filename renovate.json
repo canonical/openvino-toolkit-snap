@@ -3,6 +3,8 @@
   "extends": [
     "config:recommended"
   ],
+  "forkProcessing": "enabled",
+  "baseBranches": ["openvino-toolkit-2404"],
   "regexManagers": [
     {
       "fileMatch": ["^snap/snapcraft\\.yaml$"],
