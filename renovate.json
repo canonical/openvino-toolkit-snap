@@ -5,6 +5,17 @@
   ],
   "forkProcessing": "enabled",
   "baseBranches": ["openvino-toolkit-2404"],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "openvinotoolkit/openvino",
+        "openvinotoolkit/openvino.genai",
+        "openvinotoolkit/openvino_tokenizers"
+      ],
+      "groupName": "OpenVINO ecosystem",
+      "minimumReleaseAge": "7 days"
+    }
+  ],
   "regexManagers": [
     {
       "fileMatch": ["^snap/snapcraft\\.yaml$"],
