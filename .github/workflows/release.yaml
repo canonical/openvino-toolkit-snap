@@ -49,4 +49,4 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_PE_BOT }}
           SNAP_FILE: ${{ steps.build.outputs.snap }}
         run: |
-          snapcraft push "$SNAP_FILE" --release=latest/edge
+          snapcraft upload "$SNAP_FILE" --release=latest/edge
