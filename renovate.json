@@ -16,22 +16,24 @@
       "minimumReleaseAge": "7 days"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": ["^snap/snapcraft\\.yaml$"],
       "matchStrings": [
         "source:\\s+https://github\\.com/(?<depName>[^/\\s]+/[^/.\\s]+)(?:\\.git)?\\s+source-tag:\\s+(?<currentValue>v?[0-9]+\\.[0-9]+\\.[0-9]+(\\.[0-9]+)?)"
       ],
       "datasourceTemplate": "github-releases",
-      "versioningTemplate": "semver"
+      "versioningTemplate": "loose"
     },
     {
+      "customType": "regex",
       "fileMatch": ["^snap/snapcraft\\.yaml$"],
       "matchStrings": [
         "git clone -b (?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+) --recursive https://github\\.com/(?<depName>[^/]+/[^/]+)\\.git"
       ],
       "datasourceTemplate": "github-releases",
-      "versioningTemplate": "semver"
+      "versioningTemplate": "loose"
     }
   ]
 }
