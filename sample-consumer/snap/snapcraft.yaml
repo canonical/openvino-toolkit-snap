@@ -58,6 +58,14 @@ apps:
       OCL_ICD_VENDORS: $SNAP/etc/OpenCL/vendors
 
 parts:
+  genai-cmake-check:
+    plugin: cmake
+    source: cmake/
+    build-snaps:
+      - openvino-toolkit-2404/latest/edge
+    build-environment:
+      - OPENVINO_SNAP: /snap/openvino-toolkit-2404/current
+
   python-src:
     source: src/
     plugin: dump
