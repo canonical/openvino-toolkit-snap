@@ -61,9 +61,13 @@ parts:
       craftctl default
     override-prime: |
       craftctl default
+      case "$CRAFT_ARCH_BUILD_FOR" in
+        amd64) genai_lib_dir=intel64 ;;
+        arm64) genai_lib_dir=aarch64 ;;
+      esac
       genai_lib=$(readlink -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libopenvino_genai.so")
       ln -s "../../../lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${genai_lib##*/}" \
-        "$CRAFT_PRIME/usr/runtime/lib/intel64/${genai_lib##*/}"
+        "$CRAFT_PRIME/usr/runtime/lib/$genai_lib_dir/${genai_lib##*/}"
     build-packages:
       - ca-certificates
       - file
@@ -103,6 +107,7 @@ parts:
     organize:
       usr/runtime/lib/intel64/libopenvino_tokenizers.so: usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libopenvino_tokenizers.so
       usr/runtime/lib/intel64/libopenvino_genai.*: usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/
+      usr/runtime/lib/aarch64/libopenvino_genai.*: usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/
       usr/python/openvino_genai: usr/lib/python3/dist-packages/openvino_genai
     prime:
       - -usr/samples
