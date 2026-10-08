@@ -59,15 +59,31 @@ def main():
         description="Validate OpenVINO with a converted model"
     )
     parser.add_argument(
+        "--smoke", action="store_true", help="Check imports and CPU availability without a model"
+    )
+    parser.add_argument(
         "model_name",
+        nargs="?",
         help="HuggingFace model identifier (e.g., 'Qwen/Qwen2.5-3B')",
     )
     parser.add_argument(
         "device",
+        nargs="?",
         choices=["CPU", "GPU", "NPU"],
         help="Device type to run inference on (CPU, GPU, or NPU)",
     )
     args = parser.parse_args()
+
+    if args.smoke:
+        if args.model_name or args.device:
+            parser.error("--smoke does not accept a model or device")
+        devices = supported_devices()
+        print(f"Supported devices: {devices}")
+        if "CPU" not in devices:
+            raise RuntimeError("OpenVINO CPU device is unavailable")
+        return
+    if not args.model_name or not args.device:
+        parser.error("model_name and device are required unless --smoke is set")
 
     # Check if requested device is supported
     devices = supported_devices()

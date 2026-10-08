@@ -65,6 +65,17 @@ command:
       exit 1
   fi
 
+id: python/openvino-smoke
+category_id: openvino
+flags: simple
+_summary: Check OpenVINO Python and GenAI imports and CPU availability
+estimated_duration: 10s
+requires:
+  executable.name == 'openvino-sample-consumer.validate-openvino'
+command:
+  export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
+  openvino-sample-consumer.validate-openvino --smoke
+
 id: python/TinyLlama-1.1B-Chat-v1.0-prepare
 category_id: openvino
 flags: simple

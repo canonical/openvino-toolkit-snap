@@ -2,3 +2,4 @@
 *.snap
 # logs from snapcraft remote-build
 *.txt
+!sample-consumer/cmake/CMakeLists.txt
