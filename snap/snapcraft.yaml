@@ -59,6 +59,11 @@ parts:
       # openvino build requires recent version of setuptools
       pip install --upgrade setuptools --break-system-packages
       craftctl default
+    override-prime: |
+      craftctl default
+      genai_lib=$(readlink -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libopenvino_genai.so")
+      ln -s "../../../lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${genai_lib##*/}" \
+        "$CRAFT_PRIME/usr/runtime/lib/intel64/${genai_lib##*/}"
     build-packages:
       - ca-certificates
       - file
