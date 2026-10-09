@@ -14,3 +14,5 @@ find_package(OpenVINOGenAI CONFIG REQUIRED
 if(NOT TARGET openvino::genai OR NOT TARGET openvino::genai::c)
     message(FATAL_ERROR "OpenVINO GenAI C and C++ targets are required")
 endif()
+
+install(CODE "")
