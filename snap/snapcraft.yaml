@@ -36,7 +36,7 @@ parts:
   openvino:
     source-type: git
     source: https://github.com/openvinotoolkit/openvino.git
-    source-tag: 2026.4.0
+    source-tag: 2026.4.1
     plugin: cmake
     cmake-parameters:
       - -DENABLE_PYTHON=ON
@@ -54,7 +54,7 @@ parts:
       craftctl default
       craftctl set version="$(git describe --tags | tr -d 'v')"
       git submodule update --init --recursive
-      git clone -b 2026.4.0.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
+      git clone -b 2026.4.1.0 --recursive https://github.com/openvinotoolkit/openvino.genai.git
     override-build: |
       # openvino build requires recent version of setuptools
       pip install --upgrade setuptools --break-system-packages
@@ -172,7 +172,7 @@ parts:
     after: [openvino]
     source-type: git
     source: https://github.com/openvinotoolkit/openvino_tokenizers
-    source-tag: 2026.4.0.0
+    source-tag: 2026.4.1.0
     plugin: nil
     build-packages:
     - libtbb-dev
