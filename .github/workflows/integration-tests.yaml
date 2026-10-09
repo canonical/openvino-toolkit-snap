@@ -313,7 +313,7 @@ jobs:
   tag:
     name: Push tag for revision
     needs: [resolve-snap-info, testflinger-validation]
-        if: ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/openvino-toolkit-2404') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'openvino-toolkit-2404') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/openvino-toolkit-2404') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'openvino-toolkit-2404') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -336,4 +336,3 @@ jobs:
             git tag -a "${tag_name}" -m "Revision ${SNAP_REVISION} (amd64)"
             git push origin "${tag_name}"
           fi
-
