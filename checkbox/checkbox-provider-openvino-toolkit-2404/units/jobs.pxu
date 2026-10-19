@@ -86,7 +86,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.get-model TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  openvino-sample-consumer.get-model TinyLlama/TinyLlama-1.1B-Chat-v1.0 || exit $?
   echo "Test success: TinyLlama-1.1B-Chat-v1.0 model downloaded and converted to OpenVINO IR format."
 
 id: python/TinyLlama-1.1B-Chat-v1.0-cpu-inference
@@ -137,7 +137,7 @@ requires:
 command:
   # reset environment vars to prevent python environment conflicts
   export -n PYTHONHOME PYTHONPATH PYTHONUSERBASE
-  openvino-sample-consumer.get-model Qwen/Qwen2.5-1.5B-Instruct
+  openvino-sample-consumer.get-model Qwen/Qwen2.5-1.5B-Instruct || exit $?
   echo "Test success: Qwen-2.5-1.5B-Instruct model downloaded and converted to OpenVINO IR format."
 
 id: python/Qwen-2.5-1.5B-Instruct-cpu-inference
