@@ -10,6 +10,10 @@ on:
       - openvino-toolkit-2404
   workflow_dispatch:
     inputs:
+      source_ref:
+        description: Branch, tag, or commit to build (defaults to selected ref)
+        required: false
+        type: string
       track:
         description: Snap Store track to publish to
         required: false
@@ -33,6 +37,8 @@ jobs:
     steps:
       - name: Checkout the source
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
       - name: Find and parse snapcraft.yaml
         id: snapcraft-yaml
         uses: snapcrafters/ci/parse-snapcraft-yaml@main
