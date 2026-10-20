@@ -9,6 +9,12 @@ on:
     branches:
       - openvino-toolkit-2404
   workflow_dispatch:
+    inputs:
+      track:
+        description: Snap Store track to publish to
+        required: false
+        default: latest
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +22,7 @@ concurrency:
 
 jobs:
   release:
-    name: Release ${{ matrix.arch }} to latest/edge
+    name: Release ${{ matrix.arch }} to ${{ inputs.track || 'latest' }}/edge
     runs-on: self-hosted-linux-${{ matrix.arch }}-jammy-xlarge
     strategy:
       matrix:
@@ -42,11 +48,12 @@ jobs:
           isClassic: ${{ steps.snapcraft-yaml.outputs.classic }}
           plugs: ${{ steps.snapcraft-yaml.outputs.plugs-file }}
           slots: ${{ steps.snapcraft-yaml.outputs.slots-file }}
-      - name: Release to latest/edge
+      - name: Release to ${{ inputs.track || 'latest' }}/edge
         id: publish
         shell: bash
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_PE_BOT }}
           SNAP_FILE: ${{ steps.build.outputs.snap }}
+          RELEASE_TRACK: ${{ inputs.track || 'latest' }}
         run: |
-          snapcraft upload "$SNAP_FILE" --release=latest/edge
+          snapcraft upload "$SNAP_FILE" --release="${RELEASE_TRACK}/edge"
