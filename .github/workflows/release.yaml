@@ -28,6 +28,8 @@ jobs:
   release:
     name: Release ${{ matrix.arch }} to ${{ inputs.track || 'latest' }}/edge
     runs-on: self-hosted-linux-${{ matrix.arch }}-jammy-xlarge
+    permissions:
+      contents: write
     strategy:
       matrix:
         arch:
@@ -62,4 +64,43 @@ jobs:
           SNAP_FILE: ${{ steps.build.outputs.snap }}
           RELEASE_TRACK: ${{ inputs.track || 'latest' }}
         run: |
-          snapcraft upload "$SNAP_FILE" --release="${RELEASE_TRACK}/edge"
+          set -o pipefail
+          snapcraft upload "$SNAP_FILE" --release="${RELEASE_TRACK}/edge" 2>&1 | tee upload.log
+          # Snap files are named <name>_<version>_<arch>.snap.
+          version="$(basename "$SNAP_FILE" .snap | cut -d_ -f2)"
+          revision="$(grep -oiE 'revision [0-9]+' upload.log | head -1 | grep -oE '[0-9]+' || true)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+
+      # Only the amd64 revision is tagged; matrix jobs can't pass per-arch outputs to a later job.
+      - name: Resolve snap version and revision
+        id: snap-info
+        if: ${{ matrix.arch == 'amd64' && github.ref == 'refs/heads/openvino-toolkit-2404' }}
+        env:
+          VERSION: ${{ steps.publish.outputs.version }}
+          REVISION: ${{ steps.publish.outputs.revision }}
+        run: |
+          if [ -z "$VERSION" ] || [ -z "$REVISION" ]; then
+            echo "::error::Could not read the uploaded snap's version ('$VERSION') or revision ('$REVISION') from the upload step"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag for revision
+        if: ${{ matrix.arch == 'amd64' && steps.snap-info.outcome == 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAP_VERSION: ${{ steps.snap-info.outputs.version }}
+          SNAP_REVISION: ${{ steps.snap-info.outputs.revision }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          tag_name="${SNAP_VERSION}-amd64-rev${SNAP_REVISION}"
+          if git ls-remote --tags origin | grep -q "refs/tags/${tag_name}"; then
+            echo "Tag ${tag_name} already exists in remote repo. Doing nothing."
+          else
+            git tag -a "${tag_name}" -m "Revision ${SNAP_REVISION} (amd64)"
+            git push origin "${tag_name}"
+          fi
